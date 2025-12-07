@@ -11,6 +11,7 @@ import Footer from './Component/Footer'
 import PropertyListingPage from './pages/PropertyListingPage/PropertyListingPage'
 import BuyerDashboard from './pages/BuyerDashboard/BuyerDashboard'
 import PropertyDetailsPage from './pages/PropertyDetailsPage/PropertyDetailsPage'
+import SellerDashboard from './pages/SellerDashboard/SellerDashboard'
 
 function App() {
 
@@ -39,6 +40,10 @@ function App() {
         <Route
           path='BuyerDashboard'
           element={<BuyerDashboard/>}
+        />
+        <Route
+          path='SellerDashboard'
+          element={<SellerDashboard/>}
         />
         <Route
           path='PropertyDetailsPage'
