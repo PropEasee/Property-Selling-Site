@@ -17,6 +17,9 @@ import AdminProfile from './pages/AdminProfile/AdminProfile'
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard'
 // import MyPropertiesList from './pages/MyPropertiesList/MyPropertiesList'
 import SellerPropertiesList from './pages/SellerPropertiesList/SellerPropertiesList'
+import AboutUs from './pages/AboutUs/AboutUs'
+import AdminPropertyList from './pages/AdminPropertyList/AdminPropertyList'
+import AdminUsersList from './pages/AdminUsersList/AdminUsersList'
 
 function App() {
 
@@ -75,6 +78,18 @@ function App() {
         <Route
           path='SellerPropertiesList'
           element={<SellerPropertiesList/>}
+        />
+        <Route
+          path='AboutUs'
+          element={<AboutUs/>}
+        />
+        <Route
+          path='AdminPropertyList'
+          element={<AdminPropertyList/>}
+        />
+        <Route
+          path='AdminUsersList'
+          element={<AdminUsersList/>}
         />
       </Routes>
       <Footer/>
