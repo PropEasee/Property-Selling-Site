@@ -12,6 +12,7 @@ import PropertyListingPage from './pages/PropertyListingPage/PropertyListingPage
 import BuyerDashboard from './pages/BuyerDashboard/BuyerDashboard'
 import PropertyDetailsPage from './pages/PropertyDetailsPage/PropertyDetailsPage'
 import SellerDashboard from './pages/SellerDashboard/SellerDashboard'
+import ContactUs from './pages/ContactUs/ContactUs'
 
 function App() {
 
@@ -48,6 +49,10 @@ function App() {
         <Route
           path='PropertyDetailsPage'
           element={<PropertyDetailsPage/>}
+        />
+        <Route
+          path='ContactUs'
+          element={<ContactUs/>}
         />
 
       </Routes>
