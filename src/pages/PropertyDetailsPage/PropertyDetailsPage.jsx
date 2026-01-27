@@ -1,63 +1,47 @@
-import React, { useState } from 'react';
-import { MapPin, Bed, Bath, Square, Heart, Share2, Phone, Mail, User, Calendar, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Heart, Share2, Phone, Mail, User, Calendar, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 
 export default function PropertyDetailsPage() {
+  const { propertyId } = useParams();
   const [isSaved, setIsSaved] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedScheduleDate, setSelectedScheduleDate] = useState('');
+  const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Sample property data
-  const property = {
-    id: 1,
-    title: "Modern Luxury Villa with Ocean View",
-    price: "₹1,250,000",
-    location: "Malibu, California",
-    bedrooms: 5,
-    bathrooms: 4,
-    area: "4,500 M",
-    yearBuilt: 2022,
-    propertyType: "Villa",
-    status: "Available",
-    images: [
-      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&q=80",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80",
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80",
-      "https://images.unsplash.com/photo-1600607688066-f342a8f0b713?w=1200&q=80"
-    ],
-    description: "Stunning modern villa located in the prestigious Malibu community. This exceptional property features panoramic ocean views, state-of-the-art amenities, and luxurious finishes throughout. The home includes a chef's kitchen, home theater, infinity pool, and private beach access.",
-    features: [
-      { icon: "🏊", title: "Infinity Pool", description: "Heated infinity pool with ocean views" },
-      { icon: "🍳", title: "Chef's Kitchen", description: "Premium appliances and marble countertops" },
-      { icon: "🎬", title: "Home Theater", description: "Professionally designed media room" },
-      { icon: "🏋️", title: "Gym", description: "Fully equipped fitness center" },
-      { icon: "🅿️", title: "Parking", description: "3-car garage and circular driveway" },
-      { icon: "🌳", title: "Landscaping", description: "Professional landscape with mature trees" }
-    ],
-    agent: {
-      name: "Sarah Johnson",
-      title: "Senior Real Estate Agent",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80",
-      phone: "(555) 123-4567",
-      email: "sarah.johnson@realestateagency.com"
-    },
-    amenities: [
-      "Hardwood Floors",
-      "Central Air",
-      "Smart Home System",
-      "Solar Panels",
-      "Wine Cellar",
-      "Walk-in Closets",
-      "Outdoor Kitchen",
-      "Security System"
-    ]
-  };
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/properties/${propertyId || 3}`);
+        if (!response.ok) throw new Error('Failed to fetch property');
+        const data = await response.json();
+        setProperty(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [propertyId]);
+
+  if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading property details...</div>;
+  if (error) return <div style={{ padding: '2rem', color: 'red' }}>Error: {error}</div>;
+  if (!property) return <div style={{ padding: '2rem' }}>Property not found</div>;
+
+  const displayImages = property.images && property.images.length > 0 
+    ? property.images 
+    : ['https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&q=80'];
 
   const handlePreviousImage = () => {
-    setCurrentImageIndex((prev) => (prev === 0 ? property.images.length - 1 : prev - 1));
+    setCurrentImageIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
   };
 
   const handleNextImage = () => {
-    setCurrentImageIndex((prev) => (prev === property.images.length - 1 ? 0 : prev + 1));
+    setCurrentImageIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1));
   };
 
   const handleScheduleTour = () => {
@@ -66,6 +50,37 @@ export default function PropertyDetailsPage() {
       alert('Tour scheduled successfully!');
       setSelectedScheduleDate('');
     }
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(price);
+  };
+
+  const propertyFeatures = [
+    { icon: "🏡", title: "Property Type", description: property.propertyType },
+    { icon: "📍", title: "Location", description: `${property.city}, ${property.state}` },
+    { icon: "📮", title: "Pincode", description: property.pincode },
+    { icon: "📅", title: "Listed", description: new Date(property.createdAt).toLocaleDateString() },
+    { icon: "✅", title: "Status", description: property.status },
+  ];
+
+  const propertyAmenities = [
+    "Well Maintained",
+    "Modern Fixtures",
+    "Good Ventilation",
+    "Security System",
+    "Parking Available",
+    "Gated Community",
+    "Water Supply",
+    "Electricity Connection"
+  ];
+
+  const mockAgent = {
+    name: "Real Estate Agent",
+    title: "Property Specialist",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80",
+    phone: "(555) 123-4567",
+    email: "agent@realestateagency.com"
   };
 
   return (
@@ -636,7 +651,7 @@ export default function PropertyDetailsPage() {
             <div>
               <div className="image-gallery">
                 <img 
-                  src={property.images[currentImageIndex]} 
+                  src={displayImages[currentImageIndex]} 
                   alt={property.title}
                   className="main-image"
                 />
@@ -653,10 +668,10 @@ export default function PropertyDetailsPage() {
                   <ChevronRight size={24} color="#3b82f6" />
                 </button>
                 <div className="gallery-indicators">
-                  {property.images.map((_, index) => (
+                  {displayImages.map((_, index) => (
                     <button
                       key={index}
-                      className={`indicator-dot ₹{index === currentImageIndex ? 'active' : ''}`}
+                      className={`indicator-dot ${index === currentImageIndex ? 'active' : ''}`}
                       onClick={() => setCurrentImageIndex(index)}
                     />
                   ))}
@@ -664,17 +679,19 @@ export default function PropertyDetailsPage() {
               </div>
 
               {/* Thumbnail Gallery */}
-              <div className="thumbnail-gallery">
-                {property.images.map((image, index) => (
-                  <div
-                    key={index}
-                    className={`thumbnail ₹{index === currentImageIndex ? 'active' : ''}`}
-                    onClick={() => setCurrentImageIndex(index)}
-                  >
-                    <img src={image} alt={`Property ₹{index + 1}`} />
-                  </div>
-                ))}
-              </div>
+              {displayImages.length > 1 && (
+                <div className="thumbnail-gallery">
+                  {displayImages.map((image, index) => (
+                    <div
+                      key={index}
+                      className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    >
+                      <img src={image} alt={`Property ${index + 1}`} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Property Info & Booking */}
@@ -682,16 +699,16 @@ export default function PropertyDetailsPage() {
               <div className="property-header">
                 <div className="property-price-title">
                   <div className="price-section">
-                    <div className="property-price">{property.price}</div>
+                    <div className="property-price">{formatPrice(property.price)}</div>
                     <h1 className="property-title">{property.title}</h1>
                     <div className="property-location">
                       <MapPin size={20} />
-                      <span>{property.location}</span>
+                      <span>{property.city}, {property.state} - {property.pincode}</span>
                     </div>
                   </div>
                   <div className="action-buttons">
                     <button 
-                      className={`icon-button ₹{isSaved ? 'saved' : ''}`}
+                      className={`icon-button ${isSaved ? 'saved' : ''}`}
                       onClick={() => setIsSaved(!isSaved)}
                     >
                       <Heart size={24} fill={isSaved ? 'currentColor' : 'none'} />
@@ -705,31 +722,31 @@ export default function PropertyDetailsPage() {
                 {/* Quick Info */}
                 <div className="property-quick-info">
                   <div className="info-card">
-                    <Bed size={24} className="info-icon" />
+                    <div className="info-icon">🏠</div>
                     <div className="info-content">
-                      <span className="info-label">Bedrooms</span>
-                      <span className="info-value">{property.bedrooms}</span>
+                      <span className="info-label">Property Type</span>
+                      <span className="info-value">{property.propertyType}</span>
                     </div>
                   </div>
                   <div className="info-card">
-                    <Bath size={24} className="info-icon" />
+                    <div className="info-icon">✅</div>
                     <div className="info-content">
-                      <span className="info-label">Bathrooms</span>
-                      <span className="info-value">{property.bathrooms}</span>
+                      <span className="info-label">Status</span>
+                      <span className="info-value">{property.status}</span>
                     </div>
                   </div>
                   <div className="info-card">
-                    <Square size={24} className="info-icon" />
+                    <div className="info-icon">📮</div>
                     <div className="info-content">
-                      <span className="info-label">Area</span>
-                      <span className="info-value">{property.area}</span>
+                      <span className="info-label">Pincode</span>
+                      <span className="info-value">{property.pincode}</span>
                     </div>
                   </div>
                   <div className="info-card">
                     <Calendar size={24} className="info-icon" />
                     <div className="info-content">
-                      <span className="info-label">Year Built</span>
-                      <span className="info-value">{property.yearBuilt}</span>
+                      <span className="info-label">Listed</span>
+                      <span className="info-value">{new Date(property.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
@@ -757,12 +774,12 @@ export default function PropertyDetailsPage() {
                 {/* Contact Agent Card */}
                 <div className="contact-agent-card">
                   <img 
-                    src={property.agent.image} 
-                    alt={property.agent.name}
+                    src={mockAgent.image} 
+                    alt={mockAgent.name}
                     className="agent-image"
                   />
-                  <h4 className="agent-name">{property.agent.name}</h4>
-                  <p className="agent-title">{property.agent.title}</p>
+                  <h4 className="agent-name">{mockAgent.name}</h4>
+                  <p className="agent-title">{mockAgent.title}</p>
                   <div className="contact-buttons">
                     <button className="contact-button">
                       <Phone size={18} />
@@ -783,14 +800,16 @@ export default function PropertyDetailsPage() {
         <div className="container">
           <div className="content-section">
             <h2 className="section-title">About this property</h2>
-            <p className="description-text">{property.description}</p>
+            <p className="description-text">
+              {property.description || 'A beautiful property in ' + property.city + ', ' + property.state + '. This ' + property.propertyType.toLowerCase() + ' is available for purchase at an asking price of ' + formatPrice(property.price) + '.'}
+            </p>
           </div>
 
           {/* Features Section */}
           <div className="content-section">
-            <h2 className="section-title">Key Features</h2>
+            <h2 className="section-title">Key Details</h2>
             <div className="features-grid">
-              {property.features.map((feature, index) => (
+              {propertyFeatures.map((feature, index) => (
                 <div key={index} className="feature-item">
                   <div className="feature-icon">{feature.icon}</div>
                   <div className="feature-content">
@@ -806,7 +825,7 @@ export default function PropertyDetailsPage() {
           <div className="amenities-section">
             <h2 className="section-title">Amenities</h2>
             <div className="amenities-grid">
-              {property.amenities.map((amenity, index) => (
+              {propertyAmenities.map((amenity, index) => (
                 <div key={index} className="amenity-item">
                   <Check size={20} className="amenity-icon" />
                   <span className="amenity-name">{amenity}</span>

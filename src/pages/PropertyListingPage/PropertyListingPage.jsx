@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Home, Bed, Bath, Square, Heart, Share2, ChevronDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function PropertyListingPage() {
-  const [searchTerm, setSearchTerm] = useState('');
+ const [searchTerm, setSearchTerm] = useState('');
   const [priceRange, setPriceRange] = useState('all');
   const [propertyType, setPropertyType] = useState('all');
-  const [bedrooms, setBedrooms] = useState('all');
+  const [cityFilter, setCityFilter] = useState('all');
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const properties = [
+  const propertie = [
     {
       id: 1,
       image: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=600&q=80",
@@ -81,6 +85,59 @@ export default function PropertyListingPage() {
       featured: false
     }
   ];
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    fetch('http://localhost:8080/api/properties')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch properties');
+        return res.json();
+      })
+      .then((data) => {
+        if (mounted) {
+          setProperties(data || []);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (mounted) {
+          setError(err.message);
+          setLoading(false);
+        }
+      });
+    return () => { mounted = false; };
+  }, []);
+
+  const uniqueCities = ['all', ...Array.from(new Set(properties.map(p => p.city).filter(Boolean)))];
+  const typeOptions = ['all', 'VILLA', 'APARTMENT', 'HOUSE', 'LAND'];
+
+  const filtered = properties.filter(p => {
+    const q = searchTerm.trim().toLowerCase();
+    if (q) {
+      const match = (p.title || '').toLowerCase().includes(q) || (p.city || '').toLowerCase().includes(q) || (p.sellerName || '').toLowerCase().includes(q);
+      if (!match) return false;
+    }
+    if (propertyType !== 'all' && (p.propertyType || '').toUpperCase() !== propertyType) return false;
+    if (cityFilter !== 'all' && (p.city || '') !== cityFilter) return false;
+
+    if (priceRange === 'below1cr' && !(p.price < 10000000)) return false;
+    if (priceRange === '1to2cr' && !(p.price >= 10000000 && p.price <= 20000000)) return false;
+    if (priceRange === 'above2cr' && !(p.price > 20000000)) return false;
+
+    return true;
+  });
+
+  const formatPrice = (num) => {
+    try {
+      return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(num);
+    } catch {
+      return `₹${num}`;
+    }
+  };
+
+  const placeholder = 'https://images.unsplash.com/photo-1560185127-6b0b1d1f8b8e?w=800&q=80';
+
 
   return (
     <>
@@ -395,7 +452,6 @@ export default function PropertyListingPage() {
       `}</style>
 
       <div className="listing-page">
-        {/* Header with Filters */}
         <div className="listing-header">
           <div className="header-container">
             <h1 className="page-title">Find Your Dream Property</h1>
@@ -404,9 +460,9 @@ export default function PropertyListingPage() {
             <div className="filters-container">
               <div className="filter-group">
                 <Search size={18} className="filter-icon" />
-                <input 
-                  type="text" 
-                  placeholder="Search by location or property name"
+                <input
+                  type="text"
+                  placeholder="Search by title, city or seller"
                   className="filter-input"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -416,16 +472,12 @@ export default function PropertyListingPage() {
               <div className="filter-group">
                 <Home size={18} className="filter-icon" />
                 <div className="select-wrapper">
-                  <select 
+                  <select
                     className="filter-select"
                     value={propertyType}
                     onChange={(e) => setPropertyType(e.target.value)}
                   >
-                    <option value="all">All Types</option>
-                    <option value="house">House</option>
-                    <option value="apartment">Apartment</option>
-                    <option value="villa">Villa</option>
-                    <option value="condo">Condo</option>
+                    {typeOptions.map(t => <option key={t} value={t}>{t === 'all' ? 'All Types' : t}</option>)}
                   </select>
                   <ChevronDown size={18} className="chevron-icon" />
                 </div>
@@ -434,33 +486,29 @@ export default function PropertyListingPage() {
               <div className="filter-group">
                 <MapPin size={18} className="filter-icon" />
                 <div className="select-wrapper">
-                  <select 
+                  <select
                     className="filter-select"
                     value={priceRange}
                     onChange={(e) => setPriceRange(e.target.value)}
                   >
                     <option value="all">All Prices</option>
-                    <option value="low">₹0 - ₹50,000</option>
-                    <option value="mid">₹50,000 - ₹100,000</option>
-                    <option value="high">₹100,000+</option>
+                    <option value="below1cr">Below ₹1 Cr</option>
+                    <option value="1to2cr">₹1 Cr - ₹2 Cr</option>
+                    <option value="above2cr">Above ₹2 Cr</option>
                   </select>
                   <ChevronDown size={18} className="chevron-icon" />
                 </div>
               </div>
 
               <div className="filter-group">
-                <Bed size={18} className="filter-icon" />
+                <MapPin size={18} className="filter-icon" />
                 <div className="select-wrapper">
-                  <select 
+                  <select
                     className="filter-select"
-                    value={bedrooms}
-                    onChange={(e) => setBedrooms(e.target.value)}
+                    value={cityFilter}
+                    onChange={(e) => setCityFilter(e.target.value)}
                   >
-                    <option value="all">All Bedrooms</option>
-                    <option value="1">1 Bedroom</option>
-                    <option value="2">2 Bedrooms</option>
-                    <option value="3">3 Bedrooms</option>
-                    <option value="4+">4+ Bedrooms</option>
+                    {uniqueCities.map(c => <option key={c} value={c}>{c === 'all' ? 'All Cities' : c}</option>)}
                   </select>
                   <ChevronDown size={18} className="chevron-icon" />
                 </div>
@@ -469,13 +517,14 @@ export default function PropertyListingPage() {
           </div>
         </div>
 
-        {/* Property Listings */}
         <div className="listing-content">
           <div className="results-header">
-            <span className="results-count">Showing {properties.length} properties</span>
+            <span className="results-count">
+              {loading ? 'Loading...' : error ? `Error: ${error}` : `Showing ${filtered.length} of ${properties.length} properties`}
+            </span>
             <div className="sort-by">
               <span className="sort-label">Sort by:</span>
-              <select className="sort-select">
+              <select className="sort-select" onChange={() => {}}>
                 <option>Most Recent</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
@@ -485,50 +534,50 @@ export default function PropertyListingPage() {
           </div>
 
           <div className="properties-grid">
-            {properties.map((property) => (
-              <div key={property.id} className="property-card">
-                <div className="property-image-container">
-                  <img 
-                    src={property.image} 
-                    alt={property.title}
-                    className="property-image"
-                  />
-                  {property.featured && (
-                    <div className="featured-badge">Featured</div>
-                  )}
-                  <div className="property-actions">
-                    <button className="action-button">
-                      <Heart size={18} className="action-icon" />
-                    </button>
-                    <button className="action-button">
-                      <Share2 size={18} className="action-icon" />
-                    </button>
+            {filtered.map((p) => {
+              const img = (p.images && p.images.length > 0) ? p.images[0] : placeholder;
+              return (
+                
+                <div key={p.propertyId} className="property-card">
+                  <Link
+                  to={`/PropertyDetailsPage/${p.propertyId}`}
+                  key={p.propertyId}
+                  className="property-card"
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                  >
+                  <div className="property-image-container">
+                    <img src={img} alt={p.title} className="property-image" />
+                    {p.status === 'AVAILABLE' && <div className="featured-badge">Available</div>}
+                    <div className="property-actions">
+                      <button className="action-button">
+                        <Heart size={18} className="action-icon" />
+                      </button>
+                      <button className="action-button">
+                        <Share2 size={18} className="action-icon" />
+                      </button>
+                    </div>
                   </div>
+
+                  <div className="property-details">
+                    <div className="property-price">{formatPrice(p.price)}</div>
+                    <h3 className="property-title">{p.title}</h3>
+                    <div className="property-location">
+                      <MapPin size={16} />
+                      <span>{p.city}{p.state ? `, ${p.state}` : ''}</span>
+                    </div>
+
+                    <div style={{ paddingTop: '1rem', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                      <div className="feature-item"><strong>Type:</strong>&nbsp;{p.propertyType}</div>
+                      <div className="feature-item"><strong>Seller:</strong>&nbsp;{p.sellerName}</div>
+                      <div className="feature-item"><strong>Pincode:</strong>&nbsp;{p.pincode}</div>
+                      <div className="feature-item"><strong>Listed:</strong>&nbsp;{new Date(p.createdAt).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                </Link>
                 </div>
-                <div className="property-details">
-                  <div className="property-price">{property.price}</div>
-                  <h3 className="property-title">{property.title}</h3>
-                  <div className="property-location">
-                    <MapPin size={16} />
-                    <span>{property.location}</span>
-                  </div>
-                  <div className="property-features">
-                    <div className="feature-item">
-                      <Bed size={18} className="feature-icon" />
-                      <span>{property.bedrooms} Beds</span>
-                    </div>
-                    <div className="feature-item">
-                      <Bath size={18} className="feature-icon" />
-                      <span>{property.bathrooms} Baths</span>
-                    </div>
-                    <div className="feature-item">
-                      <Square size={18} className="feature-icon" />
-                      <span>{property.area}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+               
+              );
+            })}
           </div>
         </div>
       </div>

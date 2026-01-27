@@ -38,7 +38,7 @@ function App() {
             <Route path='AddProperty' element={<AddProperty />} />
             <Route path='BuyerDashboard' element={<BuyerDashboard />} />
             <Route path='SellerDashboard' element={<SellerDashboard />} />
-            <Route path='PropertyDetailsPage' element={<PropertyDetailsPage />} />
+            <Route path='PropertyDetailsPage/:propertyId' element={<PropertyDetailsPage />} />
             <Route path='ContactUs' element={<ContactUs />} />
             <Route path='AdminProfile' element={<AdminProfile />} />
             <Route path='AdminDashboard' element={<AdminDashboard />} />

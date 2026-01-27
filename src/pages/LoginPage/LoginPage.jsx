@@ -38,7 +38,7 @@ export default function LoginPage() {
       if (user.role === 'ADMIN') {
         navigate('/home');
       } else if (user.role === 'SELLER') {
-        navigate('/seller/dashboard');
+        navigate('/home');
       } else {
         navigate('/home');
       }

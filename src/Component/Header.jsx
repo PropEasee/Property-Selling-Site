@@ -212,15 +212,15 @@ export default function Header() {
           <ul className={`navbar-menu ₹{isOpen ? 'active' : ''}`}>
             <li><a href="home" className="nav-link">HOME</a></li>
             <li><a href="PropertyListing" className="nav-link">PROPERTIES</a></li>
-                        <li><a href="PropertyDetailsPage" className="nav-link">PROPERTIES DETAILS</a></li>
+            <li><a href="PropertyDetailsPage/3" className="nav-link">PROPERTIES DETAILS</a></li>
             <li><a href="AboutUs" className="nav-link">ABOUT US</a></li>
             <li><a href="ContactUs" className="nav-link">CONTACT US</a></li>
 
-            <li><button className="login-btn" onClick={getLogin}>LOG IN</button></li>
+            <li><button className="login-btn" onClick={getLogin}>LOG OUT</button></li>
           </ul>
           
         </div>
-        <div className="navbar-container">
+        {/* <div className="navbar-container">
 
           <ul className={`navbar-menu ₹{isOpen ? 'active' : ''}`}>
 
@@ -235,7 +235,7 @@ export default function Header() {
 
           </ul>
           
-        </div>
+        </div> */} 
       </nav>
     </>
   );
