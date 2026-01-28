@@ -75,7 +75,7 @@ export default function AdminDashboard() {
       try {
         const url = searchTerm 
           ? `${API_BASE_URL}/admin/properties?search=${searchTerm}`
-          : `${API_BASE_URL}/admin/properties`;
+          : `${API_BASE_URL}/admin/properties/no-images`;
         
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch properties');
@@ -555,7 +555,6 @@ export default function AdminDashboard() {
                     <th>Price</th>
                     <th>Status</th>
                     <th>Date</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -564,10 +563,7 @@ export default function AdminDashboard() {
                       <tr key={property.id}>
                         <td>{property.title}</td>
                         <td>
-                          {property.user?.name || 
-                           property.seller?.name || 
-                           property.sellerName || 
-                           'N/A'}
+                          {property.name}
                         </td>
                         <td>₹{property.price}</td>
                         <td>
@@ -582,31 +578,7 @@ export default function AdminDashboard() {
                           </select>
                         </td>
                         <td>{new Date(property.createdAt).toLocaleDateString()}</td>
-                        <td>
-                          <div className="action-buttons">
-                            <button 
-                              className="btn-action btn-view" 
-                              title="View"
-                              onClick={() => handleView(property.id)}
-                            >
-                              <Eye size={16} />
-                            </button>
-                            <button 
-                              className="btn-action btn-edit" 
-                              title="Edit"
-                              onClick={() => handleEdit(property.id)}
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button 
-                              className="btn-action btn-delete" 
-                              title="Delete"
-                              onClick={() => handleDelete(property.id, 'property')}
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
+                        
                       </tr>
                     ))
                   ) : (
@@ -632,7 +604,6 @@ export default function AdminDashboard() {
                       <th>Name</th>
                       <th>Email</th>
                       <th>Role</th>
-                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -642,31 +613,7 @@ export default function AdminDashboard() {
                           <td><strong>{user.name}</strong></td>
                           <td>{user.email}</td>
                           <td>{user.role}</td>
-                          <td>
-                            <div className="action-buttons">
-                              <button 
-                                className="btn-action btn-view" 
-                                title="View"
-                                onClick={() => handleView(user.id)}
-                              >
-                                <Eye size={16} />
-                              </button>
-                              <button 
-                                className="btn-action btn-edit" 
-                                title="Edit"
-                                onClick={() => handleEdit(user.id)}
-                              >
-                                <Edit2 size={16} />
-                              </button>
-                              <button 
-                                className="btn-action btn-delete" 
-                                title="Delete"
-                                onClick={() => handleDelete(user.id, 'user')}
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </td>
+                          
                         </tr>
                       ))
                     ) : (

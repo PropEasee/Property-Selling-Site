@@ -28,7 +28,7 @@ export default function AdminPropertyList() {
       setError(null);
       const url = search
         ? `${API_BASE_URL}/properties?search=${encodeURIComponent(search)}`
-        : `${API_BASE_URL}/properties`;
+        : `${API_BASE_URL}/properties/no-images`;
 
       const response = await fetch(url);
       if (!response.ok) {
@@ -630,13 +630,13 @@ export default function AdminPropertyList() {
                 >
                   ≡
                 </button>
-                <button
+                {/* <button
                   className={`view-btn ${viewType === 'grid' ? 'active' : ''}`}
                   onClick={() => setViewType('grid')}
                   title="Grid View"
                 >
                   ⊞
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -680,7 +680,7 @@ export default function AdminPropertyList() {
                             <div className="property-title">{property.title}</div>
                           </td>
                           <td>
-                            <div className="property-seller">{getSellerName(property.seller)}</div>
+                            <div className="property-seller">{getSellerName(property.name)}</div>
                           </td>
                           <td>
                             <div className="location-text">
