@@ -230,8 +230,7 @@ export default function Header() {
           </button>
 
           <ul className={`navbar-menu ${isOpen ? 'active' : ''}`}>
-            <li><a href="home" className="nav-link">HOME</a></li>
-            <li><a href="PropertyListing" className="nav-link">PROPERTIES</a></li>
+            
 
             {/* Role-specific links */}
             {userRole === 'ADMIN' && (
@@ -254,6 +253,8 @@ export default function Header() {
 
             {(!userRole || userRole === 'BUYER') && (
               <>
+                <li><a href="home" className="nav-link">HOME</a></li>
+                <li><a href="PropertyListing" className="nav-link">PROPERTIES</a></li>
                 <li><a href="/BuyerDashboard" className="nav-link">DASHBOARD</a></li>
                 <li><a href="/ContactUs" className="nav-link">CONTACT US</a></li>
               </>
