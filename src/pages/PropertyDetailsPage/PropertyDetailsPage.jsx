@@ -12,9 +12,6 @@ export default function PropertyDetailsPage() {
   const [error, setError] = useState('');
 
   const [enquiryForm, setEnquiryForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
     message: ''
   });
 
@@ -24,17 +21,57 @@ export default function PropertyDetailsPage() {
   ]);
 
   const handleEnquiryChange = (e) => {
-    const { name, value } = e.target;
+      const { name, value } = e.target;
     setEnquiryForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleEnquirySubmit = () => {
-    if (enquiryForm.name && enquiryForm.email && enquiryForm.phone) {
-      console.log('Enquiry submitted:', enquiryForm);
+  // Updated: POST enquiry to /api/enquiries
+  const handleEnquirySubmit = async () => {
+    if (!enquiryForm.message) {
+      alert('Please enter a message');
+      return;
+    }
+
+    // get logged-in user id from localStorage (saved in LoginPage)
+    let userId = null;
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        userId = u?.id ?? u?.userId ?? u?.user_id ?? null;
+      }
+    } catch (e) {
+      userId = null;
+    }
+
+    if (!userId) {
+      alert('Please login to submit an enquiry.');
+      return;
+    }
+
+    const payload = {
+      propertyId: property?.propertyId ?? property?.property_id ?? Number(propertyId),
+      userId,
+      message: enquiryForm.message
+    };
+
+    try {
+      const res = await fetch('http://localhost:8080/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || 'Failed to submit enquiry');
+      }
+
+      // success
       alert('Enquiry submitted successfully!');
-      setEnquiryForm({ name: '', email: '', phone: '', message: '' });
-    } else {
-      alert('Please fill in all required fields');
+      setEnquiryForm({ message: '' });
+    } catch (err) {
+      alert(err.message || 'Error submitting enquiry');
     }
   };
 
@@ -814,39 +851,7 @@ export default function PropertyDetailsPage() {
                 {/* Enquiry Form Card */}
                 <div className="enquiry-form-card">
                   <h3 className="card-title">Enquire About Property</h3>
-                  <div className="enquiry-form-group">
-                    <label className="form-label">Name *</label>
-                    <input 
-                      type="text"
-                      name="name"
-                      className="enquiry-input"
-                      value={enquiryForm.name}
-                      onChange={handleEnquiryChange}
-                      placeholder="Your name"
-                    />
-                  </div>
-                  <div className="enquiry-form-group">
-                    <label className="form-label">Email *</label>
-                    <input 
-                      type="email"
-                      name="email"
-                      className="enquiry-input"
-                      value={enquiryForm.email}
-                      onChange={handleEnquiryChange}
-                      placeholder="your.email@example.com"
-                    />
-                  </div>
-                  <div className="enquiry-form-group">
-                    <label className="form-label">Phone *</label>
-                    <input 
-                      type="tel"
-                      name="phone"
-                      className="enquiry-input"
-                      value={enquiryForm.phone}
-                      onChange={handleEnquiryChange}
-                      placeholder="+91 98765 43210"
-                    />
-                  </div>
+                  
                   <div className="enquiry-form-group">
                     <label className="form-label">Message</label>
                     <textarea
