@@ -8,7 +8,6 @@ import {
 export default function AdminUsersList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [viewType, setViewType] = useState('table');
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -21,9 +20,8 @@ export default function AdminUsersList() {
       id: 1,
       name: 'John Doe',
       email: 'john.doe@example.com',
-      phone: '+1 (555) 123-4567',
+      phone: '+91 98765 43210',
       role: 'Seller',
-      status: 'Active',
       joinDate: '2023-06-15',
       location: 'New York, NY',
       properties: 5,
@@ -33,9 +31,8 @@ export default function AdminUsersList() {
       id: 2,
       name: 'Jane Smith',
       email: 'jane.smith@example.com',
-      phone: '+1 (555) 234-5678',
+      phone: '+91 98765 54321',
       role: 'Buyer',
-      status: 'Active',
       joinDate: '2023-07-20',
       location: 'Los Angeles, CA',
       properties: 0,
@@ -45,9 +42,8 @@ export default function AdminUsersList() {
       id: 3,
       name: 'Mike Johnson',
       email: 'mike.johnson@example.com',
-      phone: '+1 (555) 345-6789',
+      phone: '+91 98765 65432',
       role: 'Seller',
-      status: 'Inactive',
       joinDate: '2023-08-10',
       location: 'Chicago, IL',
       properties: 3,
@@ -57,9 +53,8 @@ export default function AdminUsersList() {
       id: 4,
       name: 'Sarah Wilson',
       email: 'sarah.wilson@example.com',
-      phone: '+1 (555) 456-7890',
+      phone: '+91 98765 76543',
       role: 'Buyer',
-      status: 'Active',
       joinDate: '2023-09-05',
       location: 'Houston, TX',
       properties: 0,
@@ -69,9 +64,8 @@ export default function AdminUsersList() {
       id: 5,
       name: 'Robert Brown',
       email: 'robert.brown@example.com',
-      phone: '+1 (555) 567-8901',
+      phone: '+91 98765 87654',
       role: 'Seller',
-      status: 'Active',
       joinDate: '2023-10-12',
       location: 'Miami, FL',
       properties: 8,
@@ -81,9 +75,8 @@ export default function AdminUsersList() {
       id: 6,
       name: 'Emily Davis',
       email: 'emily.davis@example.com',
-      phone: '+1 (555) 678-9012',
+      phone: '+91 98765 98765',
       role: 'Buyer',
-      status: 'Active',
       joinDate: '2023-11-08',
       location: 'Dallas, TX',
       properties: 0,
@@ -93,9 +86,8 @@ export default function AdminUsersList() {
       id: 7,
       name: 'David Martinez',
       email: 'david.martinez@example.com',
-      phone: '+1 (555) 789-0123',
+      phone: '+91 98766 10101',
       role: 'Seller',
-      status: 'Pending',
       joinDate: '2023-12-01',
       location: 'Denver, CO',
       properties: 2,
@@ -105,9 +97,8 @@ export default function AdminUsersList() {
       id: 8,
       name: 'Lisa Anderson',
       email: 'lisa.anderson@example.com',
-      phone: '+1 (555) 890-1234',
+      phone: '+91 98766 21212',
       role: 'Buyer',
-      status: 'Active',
       joinDate: '2024-01-15',
       location: 'San Francisco, CA',
       properties: 0,
@@ -117,9 +108,8 @@ export default function AdminUsersList() {
       id: 9,
       name: 'James Wilson',
       email: 'james.wilson@example.com',
-      phone: '+1 (555) 901-2345',
+      phone: '+91 98766 32323',
       role: 'Seller',
-      status: 'Active',
       joinDate: '2024-01-20',
       location: 'Boston, MA',
       properties: 6,
@@ -129,9 +119,8 @@ export default function AdminUsersList() {
       id: 10,
       name: 'Patricia Lee',
       email: 'patricia.lee@example.com',
-      phone: '+1 (555) 012-3456',
+      phone: '+91 98766 43434',
       role: 'Buyer',
-      status: 'Active',
       joinDate: '2024-02-01',
       location: 'Seattle, WA',
       properties: 0,
@@ -141,9 +130,8 @@ export default function AdminUsersList() {
       id: 11,
       name: 'Mark Thompson',
       email: 'mark.thompson@example.com',
-      phone: '+1 (555) 111-2222',
+      phone: '+91 98766 54545',
       role: 'Seller',
-      status: 'Inactive',
       joinDate: '2024-02-10',
       location: 'Phoenix, AZ',
       properties: 4,
@@ -153,9 +141,8 @@ export default function AdminUsersList() {
       id: 12,
       name: 'Jennifer White',
       email: 'jennifer.white@example.com',
-      phone: '+1 (555) 222-3333',
+      phone: '+91 98766 65656',
       role: 'Buyer',
-      status: 'Active',
       joinDate: '2024-02-20',
       location: 'Portland, OR',
       properties: 0,
@@ -169,8 +156,7 @@ export default function AdminUsersList() {
                          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.location.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role === filterRole;
-    const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
-    return matchesSearch && matchesRole && matchesStatus;
+    return matchesSearch && matchesRole;
   });
 
   // Pagination
@@ -190,19 +176,6 @@ export default function AdminUsersList() {
     setSelectedUsers(prev =>
       prev.includes(id) ? prev.filter(u => u !== id) : [...prev, id]
     );
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'Active':
-        return <CheckCircle size={16} style={{ color: '#28a745' }} />;
-      case 'Inactive':
-        return <XCircle size={16} style={{ color: '#dc3545' }} />;
-      case 'Pending':
-        return <AlertCircle size={16} style={{ color: '#ffc107' }} />;
-      default:
-        return null;
-    }
   };
 
   return (
@@ -250,12 +223,6 @@ export default function AdminUsersList() {
           color: #6c757d;
           font-size: 0.95rem;
           margin: 0.5rem 0 0 0;
-        }
-
-        .header-actions {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
         }
 
         /* Stats Bar */
@@ -311,7 +278,7 @@ export default function AdminUsersList() {
 
         .controls-grid {
           display: grid;
-          grid-template-columns: 1fr auto auto auto;
+          grid-template-columns: 1fr auto;
           gap: 1rem;
           align-items: end;
           flex-wrap: wrap;
@@ -387,39 +354,6 @@ export default function AdminUsersList() {
 
         .view-btn:hover {
           border-color: #007bff;
-        }
-
-        .btn-custom {
-          padding: 0.75rem 1.5rem;
-          border-radius: 0.5rem;
-          border: none;
-          font-size: 0.95rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .btn-primary-custom {
-          background: #007bff;
-          color: white;
-        }
-
-        .btn-primary-custom:hover {
-          background: #0056b3;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,123,255,0.3);
-        }
-
-        .btn-secondary-custom {
-          background: #e9ecef;
-          color: #495057;
-        }
-
-        .btn-secondary-custom:hover {
-          background: #dee2e6;
         }
 
         /* Table View */
@@ -523,21 +457,6 @@ export default function AdminUsersList() {
         .badge-buyer {
           background-color: #e8f5e9;
           color: #2e7d32;
-        }
-
-        .badge-active {
-          background-color: #d4edda;
-          color: #155724;
-        }
-
-        .badge-inactive {
-          background-color: #f8d7da;
-          color: #721c24;
-        }
-
-        .badge-pending {
-          background-color: #fff3cd;
-          color: #856404;
         }
 
         .action-buttons {
@@ -747,7 +666,7 @@ export default function AdminUsersList() {
 
         @media (max-width: 1024px) {
           .controls-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
           }
 
           .users-grid {
@@ -759,10 +678,6 @@ export default function AdminUsersList() {
           .page-header {
             flex-direction: column;
             align-items: flex-start;
-          }
-
-          .header-actions {
-            width: 100%;
           }
 
           .controls-grid {
@@ -787,11 +702,6 @@ export default function AdminUsersList() {
             font-size: 0.8rem;
           }
 
-          .btn-custom {
-            width: 100%;
-            justify-content: center;
-          }
-
           .user-info {
             flex-direction: column;
             align-items: flex-start;
@@ -806,16 +716,6 @@ export default function AdminUsersList() {
             <div className="header-title">
               <h1>Users Management</h1>
               <p>Manage buyers and sellers on the platform</p>
-            </div>
-            <div className="header-actions">
-              <button className="btn-custom btn-secondary-custom">
-                <Download size={18} />
-                Export
-              </button>
-              <button className="btn-custom btn-primary-custom">
-                <Plus size={18} />
-                Add User
-              </button>
             </div>
           </div>
 
@@ -837,7 +737,7 @@ export default function AdminUsersList() {
               </div>
               <div className="stat-content">
                 <h3>{filteredUsers.filter(u => u.role === 'Seller').length}</h3>
-                <p>Active Sellers</p>
+                <p>Total Sellers</p>
               </div>
             </div>
 
@@ -847,7 +747,7 @@ export default function AdminUsersList() {
               </div>
               <div className="stat-content">
                 <h3>{filteredUsers.filter(u => u.role === 'Buyer').length}</h3>
-                <p>Active Buyers</p>
+                <p>Total Buyers</p>
               </div>
             </div>
 
@@ -856,8 +756,8 @@ export default function AdminUsersList() {
                 ✓
               </div>
               <div className="stat-content">
-                <h3>{filteredUsers.filter(u => u.status === 'Active').length}</h3>
-                <p>Verified Users</p>
+                <h3>{filteredUsers.length}</h3>
+                <p>Active Users</p>
               </div>
             </div>
           </div>
@@ -892,30 +792,16 @@ export default function AdminUsersList() {
                 <option value="Buyer">Buyers</option>
               </select>
 
-              <select
-                className="filter-select"
-                value={filterStatus}
-                onChange={(e) => {
-                  setFilterStatus(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="all">All Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="Pending">Pending</option>
-              </select>
-
               <div className="view-toggle">
                 <button
-                  className={`view-btn ₹{viewType === 'table' ? 'active' : ''}`}
+                  className={`view-btn ${viewType === 'table' ? 'active' : ''}`}
                   onClick={() => setViewType('table')}
                   title="Table View"
                 >
                   ≡
                 </button>
                 <button
-                  className={`view-btn ₹{viewType === 'grid' ? 'active' : ''}`}
+                  className={`view-btn ${viewType === 'grid' ? 'active' : ''}`}
                   onClick={() => setViewType('grid')}
                   title="Grid View"
                 >
@@ -928,7 +814,7 @@ export default function AdminUsersList() {
           {/* Results Info */}
           <div style={{ marginBottom: '1rem', color: '#6c757d', fontSize: '0.95rem' }}>
             Showing <strong>{filteredUsers.length}</strong> users
-            {selectedUsers.length > 0 && ` | ₹{selectedUsers.length} selected`}
+            {selectedUsers.length > 0 && ` | ${selectedUsers.length} selected`}
           </div>
 
           {/* Table View */}
@@ -951,7 +837,6 @@ export default function AdminUsersList() {
                         <th>Contact</th>
                         <th>Location</th>
                         <th>Role</th>
-                        <th>Status</th>
                         <th>Join Date</th>
                         <th>Properties</th>
                         <th style={{ width: '120px' }}>Actions</th>
@@ -985,7 +870,7 @@ export default function AdminUsersList() {
                                 <Phone size={14} style={{ color: '#6c757d' }} />
                                 {user.phone}
                               </div>
-                              <a href={`mailto:₹{user.email}`} style={{ color: '#007bff', textDecoration: 'none', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <a href={`mailto:${user.email}`} style={{ color: '#007bff', textDecoration: 'none', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <Mail size={14} />
                                 Email
                               </a>
@@ -998,19 +883,13 @@ export default function AdminUsersList() {
                             </div>
                           </td>
                           <td>
-                            <span className={`badge-custom badge-₹{user.role.toLowerCase()}`}>
+                            <span className={`badge-custom badge-${user.role.toLowerCase()}`}>
                               {user.role}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`badge-custom badge-₹{user.status.toLowerCase()}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
-                              {getStatusIcon(user.status)}
-                              {user.status}
                             </span>
                           </td>
                           <td>{user.joinDate}</td>
                           <td style={{ fontWeight: '600', color: '#212529' }}>
-                            {user.properties > 0 ? `₹{user.properties} listed` : 'N/A'}
+                            {user.properties > 0 ? `${user.properties} listed` : 'N/A'}
                           </td>
                           <td>
                             <div className="action-buttons">
@@ -1034,7 +913,7 @@ export default function AdminUsersList() {
                 <div className="empty-state">
                   <div className="empty-state-icon">👥</div>
                   <div className="empty-state-title">No Users Found</div>
-                  <p>Try adjusting your search filters or add new users</p>
+                  <p>Try adjusting your search filters</p>
                 </div>
               )}
             </div>
@@ -1075,12 +954,8 @@ export default function AdminUsersList() {
 
                         <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #e9ecef' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                            <span className={`badge-custom badge-₹{user.role.toLowerCase()}`}>
+                            <span className={`badge-custom badge-${user.role.toLowerCase()}`}>
                               {user.role}
-                            </span>
-                            <span className={`badge-custom badge-₹{user.status.toLowerCase()}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
-                              {getStatusIcon(user.status)}
-                              {user.status}
                             </span>
                           </div>
 
@@ -1110,7 +985,7 @@ export default function AdminUsersList() {
                 <div className="empty-state">
                   <div className="empty-state-icon">👥</div>
                   <div className="empty-state-title">No Users Found</div>
-                  <p>Try adjusting your search filters or add new users</p>
+                  <p>Try adjusting your search filters</p>
                 </div>
               )}
             </>
@@ -1142,7 +1017,7 @@ export default function AdminUsersList() {
               }).map(page => (
                 <button
                   key={page}
-                  className={`pagination-btn ₹{currentPage === page ? 'active' : ''}`}
+                  className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
                   onClick={() => setCurrentPage(page)}
                 >
                   {page}

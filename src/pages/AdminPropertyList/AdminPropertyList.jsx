@@ -11,7 +11,7 @@ export default function AdminPropertyList() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewType, setViewType] = useState('table'); // 'table' or 'grid'
+  const [viewType, setViewType] = useState('table');
   const [selectedProperties, setSelectedProperties] = useState([]);
 
   const itemsPerPage = 10;
@@ -23,8 +23,8 @@ export default function AdminPropertyList() {
       title: 'Luxury Apartment in Downtown',
       seller: 'John Doe',
       price: '₹450,000',
-      category: 'Residential',
-      status: 'Active',
+      category: 'APARTMENT',
+      status: 'Available',
       location: 'New York, NY',
       bedrooms: 3,
       bathrooms: 2,
@@ -37,7 +37,7 @@ export default function AdminPropertyList() {
       title: 'Modern Villa with Garden',
       seller: 'Jane Smith',
       price: '₹750,000',
-      category: 'Residential',
+      category: 'VILLA',
       status: 'Pending',
       location: 'Los Angeles, CA',
       bedrooms: 5,
@@ -51,8 +51,8 @@ export default function AdminPropertyList() {
       title: 'Commercial Space Downtown',
       seller: 'Mike Johnson',
       price: '₹320,000',
-      category: 'Commercial',
-      status: 'Active',
+      category: 'APARTMENT',
+      status: 'Available',
       location: 'Chicago, IL',
       bedrooms: 0,
       bathrooms: 2,
@@ -65,8 +65,8 @@ export default function AdminPropertyList() {
       title: 'Residential Complex',
       seller: 'Sarah Wilson',
       price: '₹1,200,000',
-      category: 'Residential',
-      status: 'Rejected',
+      category: 'HOUSE',
+      status: 'Sold',
       location: 'Houston, TX',
       bedrooms: 8,
       bathrooms: 4,
@@ -79,8 +79,8 @@ export default function AdminPropertyList() {
       title: 'Beachfront Property',
       seller: 'Robert Brown',
       price: '₹890,000',
-      category: 'Residential',
-      status: 'Active',
+      category: 'LAND',
+      status: 'Available',
       location: 'Miami, FL',
       bedrooms: 4,
       bathrooms: 3,
@@ -121,11 +121,11 @@ export default function AdminPropertyList() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Active':
+      case 'Available':
         return '#28a745';
       case 'Pending':
         return '#ffc107';
-      case 'Rejected':
+      case 'Sold':
         return '#dc3545';
       default:
         return '#6c757d';
@@ -185,7 +185,6 @@ export default function AdminPropertyList() {
           flex-wrap: wrap;
         }
 
-        /* Controls Card */
         .controls-card {
           background: white;
           border-radius: 1rem;
@@ -196,7 +195,7 @@ export default function AdminPropertyList() {
 
         .controls-grid {
           display: grid;
-          grid-template-columns: 1fr auto auto;
+          grid-template-columns: 1fr auto auto auto;
           gap: 1rem;
           align-items: end;
           flex-wrap: wrap;
@@ -307,7 +306,6 @@ export default function AdminPropertyList() {
           background: #dee2e6;
         }
 
-        /* Table View */
         .table-card {
           background: white;
           border-radius: 1rem;
@@ -389,7 +387,7 @@ export default function AdminPropertyList() {
           text-transform: uppercase;
         }
 
-        .badge-active {
+        .badge-available {
           background-color: #d4edda;
           color: #155724;
         }
@@ -399,7 +397,7 @@ export default function AdminPropertyList() {
           color: #856404;
         }
 
-        .badge-rejected {
+        .badge-sold {
           background-color: #f8d7da;
           color: #721c24;
         }
@@ -449,7 +447,6 @@ export default function AdminPropertyList() {
           background: #ffcdd2;
         }
 
-        /* Grid View */
         .property-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -536,7 +533,6 @@ export default function AdminPropertyList() {
           font-size: 0.75rem;
         }
 
-        /* Pagination */
         .pagination-container {
           display: flex;
           justify-content: center;
@@ -604,7 +600,7 @@ export default function AdminPropertyList() {
 
         @media (max-width: 1024px) {
           .controls-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
           }
 
           .property-grid {
@@ -693,9 +689,9 @@ export default function AdminPropertyList() {
                 }}
               >
                 <option value="all">All Status</option>
-                <option value="Active">Active</option>
+                <option value="Available">Available</option>
                 <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
+                <option value="Sold">Sold</option>
               </select>
 
               <select
@@ -707,22 +703,22 @@ export default function AdminPropertyList() {
                 }}
               >
                 <option value="all">All Categories</option>
-                <option value="Residential">Residential</option>
-                <option value="Commercial">Commercial</option>
-                <option value="Industrial">Industrial</option>
-                <option value="Land">Land</option>
+                <option value="APARTMENT">APARTMENT</option>
+                <option value="HOUSE">HOUSE</option>
+                <option value="LAND">LAND</option>
+                <option value="VILLA">VILLA</option>
               </select>
 
               <div className="view-toggle">
                 <button
-                  className={`view-btn ₹{viewType === 'table' ? 'active' : ''}`}
+                  className={`view-btn ${viewType === 'table' ? 'active' : ''}`}
                   onClick={() => setViewType('table')}
                   title="Table View"
                 >
                   ≡
                 </button>
                 <button
-                  className={`view-btn ₹{viewType === 'grid' ? 'active' : ''}`}
+                  className={`view-btn ${viewType === 'grid' ? 'active' : ''}`}
                   onClick={() => setViewType('grid')}
                   title="Grid View"
                 >
@@ -735,7 +731,7 @@ export default function AdminPropertyList() {
           {/* Results Info */}
           <div style={{ marginBottom: '1rem', color: '#6c757d', fontSize: '0.95rem' }}>
             Showing <strong>{filteredProperties.length}</strong> properties
-            {selectedProperties.length > 0 && ` | ₹{selectedProperties.length} selected`}
+            {selectedProperties.length > 0 && ` | ${selectedProperties.length} selected`}
           </div>
 
           {/* Table View */}
@@ -792,7 +788,7 @@ export default function AdminPropertyList() {
                           </td>
                           <td>{property.category}</td>
                           <td>
-                            <span className={`badge-custom badge-₹{property.status.toLowerCase()}`}>
+                            <span className={`badge-custom badge-${property.status.toLowerCase()}`}>
                               {property.status}
                             </span>
                           </td>
@@ -865,7 +861,7 @@ export default function AdminPropertyList() {
 
                         <div className="property-footer">
                           <div className="property-price">{property.price}</div>
-                          <span className={`badge-custom property-status badge-₹{property.status.toLowerCase()}`}>
+                          <span className={`badge-custom badge-${property.status.toLowerCase()}`}>
                             {property.status}
                           </span>
                         </div>
@@ -909,7 +905,7 @@ export default function AdminPropertyList() {
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                 <button
                   key={page}
-                  className={`pagination-btn ₹{currentPage === page ? 'active' : ''}`}
+                  className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
                   onClick={() => setCurrentPage(page)}
                 >
                   {page}
