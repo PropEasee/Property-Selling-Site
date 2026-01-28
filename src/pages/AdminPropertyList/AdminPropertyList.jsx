@@ -1,103 +1,97 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Search, Filter, Download, Plus, Eye, Edit2, Trash2,
-  ChevronLeft, ChevronRight, AlertCircle, MoreVertical,
-  Home, MapPin, DollarSign, Calendar, User
+  Search, ChevronLeft, ChevronRight, MapPin
 } from 'lucide-react';
+
+const API_BASE_URL = 'http://localhost:8080/api/admin';
 
 export default function AdminPropertyList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterPropertyType, setFilterPropertyType] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [viewType, setViewType] = useState('table');
-  const [selectedProperties, setSelectedProperties] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const itemsPerPage = 10;
 
-  // Sample property data
-  const allProperties = [
-    {
-      id: 1,
-      title: 'Luxury Apartment in Downtown',
-      seller: 'John Doe',
-      price: '₹450,000',
-      category: 'APARTMENT',
-      status: 'Available',
-      location: 'New York, NY',
-      bedrooms: 3,
-      bathrooms: 2,
-      sqft: '2,500',
-      date: '2024-01-15',
-      image: 'https://via.placeholder.com/300x200?text=Luxury+Apartment'
-    },
-    {
-      id: 2,
-      title: 'Modern Villa with Garden',
-      seller: 'Jane Smith',
-      price: '₹750,000',
-      category: 'VILLA',
-      status: 'Pending',
-      location: 'Los Angeles, CA',
-      bedrooms: 5,
-      bathrooms: 3,
-      sqft: '4,500',
-      date: '2024-01-14',
-      image: 'https://via.placeholder.com/300x200?text=Modern+Villa'
-    },
-    {
-      id: 3,
-      title: 'Commercial Space Downtown',
-      seller: 'Mike Johnson',
-      price: '₹320,000',
-      category: 'APARTMENT',
-      status: 'Available',
-      location: 'Chicago, IL',
-      bedrooms: 0,
-      bathrooms: 2,
-      sqft: '3,000',
-      date: '2024-01-13',
-      image: 'https://via.placeholder.com/300x200?text=Commercial+Space'
-    },
-    {
-      id: 4,
-      title: 'Residential Complex',
-      seller: 'Sarah Wilson',
-      price: '₹1,200,000',
-      category: 'HOUSE',
-      status: 'Sold',
-      location: 'Houston, TX',
-      bedrooms: 8,
-      bathrooms: 4,
-      sqft: '8,000',
-      date: '2024-01-12',
-      image: 'https://via.placeholder.com/300x200?text=Residential+Complex'
-    },
-    {
-      id: 5,
-      title: 'Beachfront Property',
-      seller: 'Robert Brown',
-      price: '₹890,000',
-      category: 'LAND',
-      status: 'Available',
-      location: 'Miami, FL',
-      bedrooms: 4,
-      bathrooms: 3,
-      sqft: '3,500',
-      date: '2024-01-11',
-      image: 'https://via.placeholder.com/300x200?text=Beachfront+Property'
+  // Fetch properties from backend
+  useEffect(() => {
+    fetchProperties(searchTerm);
+  }, [searchTerm]);
+
+  const fetchProperties = async (search = '') => {
+    try {
+      setLoading(true);
+      setError(null);
+      const url = search
+        ? `${API_BASE_URL}/properties?search=${encodeURIComponent(search)}`
+        : `${API_BASE_URL}/properties`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Failed to fetch properties');
+      }
+      const data = await response.json();
+      setProperties(data);
+    } catch (err) {
+      setError(err.message || 'Error fetching properties');
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Helper function to safely get seller name
+  const getSellerName = (seller) => {
+    if (!seller) return 'N/A';
+    if (typeof seller === 'string') return seller;
+    if (seller.name) return seller.name;
+    if (seller.email) return seller.email;
+    return 'N/A';
+  };
+
+  // Format location from city, state, pincode
+  const getLocation = (property) => {
+    const parts = [];
+    if (property.city) parts.push(property.city);
+    if (property.state) parts.push(property.state);
+    if (property.pincode) parts.push(property.pincode);
+    return parts.length > 0 ? parts.join(', ') : 'N/A';
+  };
+
+  // Format date helper
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return 'N/A';
+    }
+  };
+
+  // Format status - convert AVAILABLE to Available, etc.
+  const formatStatus = (status) => {
+    if (!status) return 'Pending';
+    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  };
 
   // Filter properties
-  const filteredProperties = allProperties.filter(property => {
-    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.seller.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.location.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredProperties = properties.filter(property => {
+    const sellerName = getSellerName(property.seller);
+    const location = getLocation(property);
+    const matchesSearch = property.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         sellerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         location.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || property.status === filterStatus;
-    const matchesCategory = filterCategory === 'all' || property.category === filterCategory;
-    return matchesSearch && matchesStatus && matchesCategory;
+    const matchesType = filterPropertyType === 'all' || property.propertyType === filterPropertyType;
+    return matchesSearch && matchesStatus && matchesType;
   });
 
   // Pagination
@@ -105,40 +99,34 @@ export default function AdminPropertyList() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      setSelectedProperties(paginatedProperties.map(p => p.id));
-    } else {
-      setSelectedProperties([]);
-    }
-  };
+  const handleForceStatus = async (propertyId, newStatus) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/properties/${propertyId}/force-status`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: newStatus })
+        }
+      );
 
-  const handleSelectProperty = (id) => {
-    setSelectedProperties(prev =>
-      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
-    );
-  };
+      if (!response.ok) {
+        throw new Error('Failed to update property status');
+      }
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Available':
-        return '#28a745';
-      case 'Pending':
-        return '#ffc107';
-      case 'Sold':
-        return '#dc3545';
-      default:
-        return '#6c757d';
+      const updatedProperty = await response.json();
+      setProperties(properties.map(p => p.propertyId === propertyId ? updatedProperty : p));
+      alert('✅ Property status updated successfully');
+    } catch (err) {
+      alert(`❌ Error: ${err.message}`);
+      console.error('Update error:', err);
     }
   };
 
   return (
     <>
-      <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-      />
-
       <style>{`
         * {
           margin: 0;
@@ -179,12 +167,6 @@ export default function AdminPropertyList() {
           margin: 0.5rem 0 0 0;
         }
 
-        .header-actions {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
         .controls-card {
           background: white;
           border-radius: 1rem;
@@ -198,7 +180,6 @@ export default function AdminPropertyList() {
           grid-template-columns: 1fr auto auto auto;
           gap: 1rem;
           align-items: end;
-          flex-wrap: wrap;
         }
 
         .search-wrapper {
@@ -261,6 +242,7 @@ export default function AdminPropertyList() {
           justify-content: center;
           transition: all 0.3s;
           color: #6c757d;
+          font-weight: bold;
         }
 
         .view-btn.active {
@@ -271,39 +253,6 @@ export default function AdminPropertyList() {
 
         .view-btn:hover {
           border-color: #007bff;
-        }
-
-        .btn-custom {
-          padding: 0.75rem 1.5rem;
-          border-radius: 0.5rem;
-          border: none;
-          font-size: 0.95rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .btn-primary-custom {
-          background: #007bff;
-          color: white;
-        }
-
-        .btn-primary-custom:hover {
-          background: #0056b3;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,123,255,0.3);
-        }
-
-        .btn-secondary-custom {
-          background: #e9ecef;
-          color: #495057;
-        }
-
-        .btn-secondary-custom:hover {
-          background: #dee2e6;
         }
 
         .table-card {
@@ -348,13 +297,6 @@ export default function AdminPropertyList() {
           background-color: #f8f9fa;
         }
 
-        .checkbox-custom {
-          width: 18px;
-          height: 18px;
-          cursor: pointer;
-          accent-color: #007bff;
-        }
-
         .property-title {
           font-weight: 600;
           color: #212529;
@@ -378,73 +320,61 @@ export default function AdminPropertyList() {
           font-size: 1rem;
         }
 
-        .badge-custom {
-          display: inline-block;
+        .badge-available {
+          background-color: #d4edda;
+          color: #155724;
           padding: 0.375rem 0.75rem;
           border-radius: 50px;
           font-size: 0.75rem;
           font-weight: 600;
           text-transform: uppercase;
-        }
-
-        .badge-available {
-          background-color: #d4edda;
-          color: #155724;
+          display: inline-block;
         }
 
         .badge-pending {
           background-color: #fff3cd;
           color: #856404;
+          padding: 0.375rem 0.75rem;
+          border-radius: 50px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          display: inline-block;
         }
 
         .badge-sold {
           background-color: #f8d7da;
           color: #721c24;
+          padding: 0.375rem 0.75rem;
+          border-radius: 50px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          display: inline-block;
         }
 
-        .action-buttons {
-          display: flex;
-          gap: 0.5rem;
-        }
-
-        .btn-action {
-          width: 36px;
-          height: 36px;
-          border: none;
+        .btn-status {
+          padding: 0.5rem 1rem;
+          font-size: 0.85rem;
+          border: 1px solid #ced4da;
           border-radius: 0.375rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          background: white;
+          color: #495057;
           cursor: pointer;
           transition: all 0.3s;
-          font-size: 0;
+          width: 100%;
+          min-width: 120px;
         }
 
-        .btn-view {
-          background: #e3f2fd;
-          color: #1976d2;
+        .btn-status:hover {
+          border-color: #007bff;
+          background: #f0f7ff;
         }
 
-        .btn-view:hover {
-          background: #bbdefb;
-        }
-
-        .btn-edit {
-          background: #fff3e0;
-          color: #f57c00;
-        }
-
-        .btn-edit:hover {
-          background: #ffe0b2;
-        }
-
-        .btn-delete {
-          background: #ffebee;
-          color: #c62828;
-        }
-
-        .btn-delete:hover {
-          background: #ffcdd2;
+        .btn-status:focus {
+          outline: none;
+          border-color: #007bff;
+          box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
         }
 
         .property-grid {
@@ -478,10 +408,6 @@ export default function AdminPropertyList() {
           padding: 1.5rem;
         }
 
-        .property-header {
-          margin-bottom: 1rem;
-        }
-
         .property-name {
           font-size: 1.1rem;
           font-weight: 600;
@@ -492,6 +418,7 @@ export default function AdminPropertyList() {
         .property-seller-info {
           font-size: 0.85rem;
           color: #6c757d;
+          margin-bottom: 1rem;
         }
 
         .property-details {
@@ -521,16 +448,13 @@ export default function AdminPropertyList() {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          gap: 1rem;
         }
 
         .property-price {
           font-size: 1.25rem;
           font-weight: 700;
           color: #28a745;
-        }
-
-        .property-status {
-          font-size: 0.75rem;
         }
 
         .pagination-container {
@@ -598,14 +522,19 @@ export default function AdminPropertyList() {
           margin-bottom: 0.5rem;
         }
 
-        @media (max-width: 1024px) {
-          .controls-grid {
-            grid-template-columns: 1fr 1fr;
-          }
+        .loading-spinner {
+          text-align: center;
+          padding: 3rem;
+          color: #6c757d;
+        }
 
-          .property-grid {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          }
+        .error-message {
+          background: #f8d7da;
+          color: #721c24;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          margin-bottom: 1rem;
+          border: 1px solid #f5c6cb;
         }
 
         @media (max-width: 768px) {
@@ -614,16 +543,8 @@ export default function AdminPropertyList() {
             align-items: flex-start;
           }
 
-          .header-actions {
-            width: 100%;
-          }
-
           .controls-grid {
             grid-template-columns: 1fr;
-          }
-
-          .search-input {
-            width: 100%;
           }
 
           .property-grid {
@@ -635,33 +556,25 @@ export default function AdminPropertyList() {
             padding: 0.75rem 0.5rem;
             font-size: 0.8rem;
           }
-
-          .btn-custom {
-            width: 100%;
-            justify-content: center;
-          }
         }
       `}</style>
 
       <div className="property-list-container">
-        <div className="container-fluid">
+        <div style={{ maxWidth: '1400px', margin: '0 auto', paddingLeft: '1rem', paddingRight: '1rem' }}>
           {/* Page Header */}
           <div className="page-header">
             <div className="header-title">
               <h1>All Properties</h1>
               <p>Manage and monitor all listed properties on the platform</p>
             </div>
-            <div className="header-actions">
-              <button className="btn-custom btn-secondary-custom">
-                <Download size={18} />
-                Export
-              </button>
-              <button className="btn-custom btn-primary-custom">
-                <Plus size={18} />
-                Add Property
-              </button>
-            </div>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="error-message">
+              <strong>Error:</strong> {error}
+            </div>
+          )}
 
           {/* Controls */}
           <div className="controls-card">
@@ -689,24 +602,24 @@ export default function AdminPropertyList() {
                 }}
               >
                 <option value="all">All Status</option>
-                <option value="Available">Available</option>
-                <option value="Pending">Pending</option>
-                <option value="Sold">Sold</option>
+                <option value="AVAILABLE">Available</option>
+                <option value="PENDING">Pending</option>
+                <option value="SOLD">Sold</option>
               </select>
 
               <select
                 className="filter-select"
-                value={filterCategory}
+                value={filterPropertyType}
                 onChange={(e) => {
-                  setFilterCategory(e.target.value);
+                  setFilterPropertyType(e.target.value);
                   setCurrentPage(1);
                 }}
               >
-                <option value="all">All Categories</option>
-                <option value="APARTMENT">APARTMENT</option>
-                <option value="HOUSE">HOUSE</option>
-                <option value="LAND">LAND</option>
-                <option value="VILLA">VILLA</option>
+                <option value="all">All Types</option>
+                <option value="APARTMENT">Apartment</option>
+                <option value="HOUSE">House</option>
+                <option value="LAND">Land</option>
+                <option value="VILLA">Villa</option>
               </select>
 
               <div className="view-toggle">
@@ -731,81 +644,66 @@ export default function AdminPropertyList() {
           {/* Results Info */}
           <div style={{ marginBottom: '1rem', color: '#6c757d', fontSize: '0.95rem' }}>
             Showing <strong>{filteredProperties.length}</strong> properties
-            {selectedProperties.length > 0 && ` | ${selectedProperties.length} selected`}
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="table-card">
+              <div className="loading-spinner">
+                <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+                <p>Loading properties...</p>
+              </div>
+            </div>
+          )}
+
           {/* Table View */}
-          {viewType === 'table' && (
+          {!loading && viewType === 'table' && (
             <div className="table-card">
               {filteredProperties.length > 0 ? (
                 <div className="table-responsive">
                   <table className="table-custom">
                     <thead>
                       <tr>
-                        <th style={{ width: '40px' }}>
-                          <input
-                            type="checkbox"
-                            className="checkbox-custom"
-                            checked={selectedProperties.length === paginatedProperties.length && paginatedProperties.length > 0}
-                            onChange={handleSelectAll}
-                          />
-                        </th>
                         <th>Property</th>
                         <th>Seller</th>
                         <th>Location</th>
+                        <th>Type</th>
                         <th>Price</th>
-                        <th>Category</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th style={{ width: '120px' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {paginatedProperties.map((property) => (
-                        <tr key={property.id}>
-                          <td>
-                            <input
-                              type="checkbox"
-                              className="checkbox-custom"
-                              checked={selectedProperties.includes(property.id)}
-                              onChange={() => handleSelectProperty(property.id)}
-                            />
-                          </td>
+                        <tr key={property.propertyId}>
                           <td>
                             <div className="property-title">{property.title}</div>
                           </td>
                           <td>
-                            <div className="property-seller">{property.seller}</div>
+                            <div className="property-seller">{getSellerName(property.seller)}</div>
                           </td>
                           <td>
                             <div className="location-text">
                               <MapPin size={14} style={{ flexShrink: 0 }} />
-                              {property.location}
+                              {getLocation(property)}
                             </div>
                           </td>
+                          <td>{property.propertyType || 'N/A'}</td>
                           <td>
-                            <div className="price-text">{property.price}</div>
+                            <div className="price-text">₹{property.price?.toLocaleString() || '0'}</div>
                           </td>
-                          <td>{property.category}</td>
                           <td>
-                            <span className={`badge-custom badge-${property.status.toLowerCase()}`}>
-                              {property.status}
-                            </span>
+                            <select
+                              className="btn-status"
+                              value={property.status || 'PENDING'}
+                              onChange={(e) => handleForceStatus(property.propertyId, e.target.value)}
+                            >
+                              <option value="AVAILABLE">Available</option>
+                              <option value="PENDING">Pending</option>
+                              <option value="SOLD">Sold</option>
+                            </select>
                           </td>
-                          <td>{property.date}</td>
-                          <td>
-                            <div className="action-buttons">
-                              <button className="btn-action btn-view" title="View">
-                                <Eye size={16} />
-                              </button>
-                              <button className="btn-action btn-edit" title="Edit">
-                                <Edit2 size={16} />
-                              </button>
-                              <button className="btn-action btn-delete" title="Delete">
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </td>
+                          <td>{formatDate(property.createdAt)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -815,68 +713,55 @@ export default function AdminPropertyList() {
                 <div className="empty-state">
                   <div className="empty-state-icon">📭</div>
                   <div className="empty-state-title">No Properties Found</div>
-                  <p>Try adjusting your search filters or add new properties</p>
+                  <p>Try adjusting your search filters</p>
                 </div>
               )}
             </div>
           )}
 
           {/* Grid View */}
-          {viewType === 'grid' && (
+          {!loading && viewType === 'grid' && (
             <>
               {filteredProperties.length > 0 ? (
                 <div className="property-grid">
                   {paginatedProperties.map((property) => (
-                    <div key={property.id} className="property-card">
-                      <img src={property.image} alt={property.title} className="property-image" />
+                    <div key={property.propertyId} className="property-card">
+                      <img src={property.image || 'https://via.placeholder.com/280x200'} alt={property.title} className="property-image" />
                       <div className="property-content">
-                        <div className="property-header">
-                          <div className="property-name">{property.title}</div>
-                          <div className="property-seller-info">by {property.seller}</div>
-                        </div>
+                        <div className="property-name">{property.title}</div>
+                        <div className="property-seller-info">by {getSellerName(property.seller)}</div>
 
                         <div className="property-details">
                           <div className="detail-item">
-                            <div className="detail-label">Bedrooms</div>
-                            <div className="detail-value">{property.bedrooms || 'N/A'}</div>
+                            <div className="detail-label">Location</div>
+                            <div className="detail-value">{getLocation(property)}</div>
                           </div>
                           <div className="detail-item">
-                            <div className="detail-label">Bathrooms</div>
-                            <div className="detail-value">{property.bathrooms}</div>
+                            <div className="detail-label">Type</div>
+                            <div className="detail-value">{property.propertyType || 'N/A'}</div>
                           </div>
-                          <div className="detail-item">
-                            <div className="detail-label">Size</div>
-                            <div className="detail-value">{property.sqft} sqft</div>
-                          </div>
-                          <div className="detail-item">
-                            <div className="detail-label">Category</div>
-                            <div className="detail-value">{property.category}</div>
-                          </div>
-                        </div>
-
-                        <div style={{ marginBottom: '1rem', fontSize: '0.85rem', color: '#6c757d', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <MapPin size={14} />
-                          {property.location}
                         </div>
 
                         <div className="property-footer">
-                          <div className="property-price">{property.price}</div>
-                          <span className={`badge-custom badge-${property.status.toLowerCase()}`}>
-                            {property.status}
+                          <div className="property-price">₹{property.price?.toLocaleString() || '0'}</div>
+                          <span className={`badge-${property.status?.toLowerCase() || 'pending'}`}>
+                            {formatStatus(property.status)}
                           </span>
                         </div>
 
-                        <div className="action-buttons" style={{ marginTop: '1rem', justifyContent: 'space-around' }}>
-                          <button className="btn-action btn-view" title="View">
-                            <Eye size={16} />
-                          </button>
-                          <button className="btn-action btn-edit" title="Edit">
-                            <Edit2 size={16} />
-                          </button>
-                          <button className="btn-action btn-delete" title="Delete">
-                            <Trash2 size={16} />
-                          </button>
+                        <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#6c757d', marginBottom: '1rem' }}>
+                          📅 {formatDate(property.createdAt)}
                         </div>
+
+                        <select
+                          className="btn-status"
+                          value={property.status || 'PENDING'}
+                          onChange={(e) => handleForceStatus(property.propertyId, e.target.value)}
+                        >
+                          <option value="AVAILABLE">Available</option>
+                          <option value="PENDING">Pending</option>
+                          <option value="SOLD">Sold</option>
+                        </select>
                       </div>
                     </div>
                   ))}
@@ -885,14 +770,14 @@ export default function AdminPropertyList() {
                 <div className="empty-state" style={{ background: 'white', borderRadius: '1rem', marginBottom: '2rem' }}>
                   <div className="empty-state-icon">📭</div>
                   <div className="empty-state-title">No Properties Found</div>
-                  <p>Try adjusting your search filters or add new properties</p>
+                  <p>Try adjusting your search filters</p>
                 </div>
               )}
             </>
           )}
 
           {/* Pagination */}
-          {filteredProperties.length > 0 && (
+          {!loading && filteredProperties.length > 0 && (
             <div className="pagination-container">
               <button
                 className="pagination-btn"
@@ -902,7 +787,10 @@ export default function AdminPropertyList() {
                 <ChevronLeft size={18} />
               </button>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                const startPage = Math.max(1, currentPage - 2);
+                return startPage + i;
+              }).map(page => (
                 <button
                   key={page}
                   className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
