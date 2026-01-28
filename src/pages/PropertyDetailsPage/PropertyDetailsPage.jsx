@@ -11,6 +11,33 @@ export default function PropertyDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const [enquiryForm, setEnquiryForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+
+  const [reviews, setReviews] = useState([
+    { id: 1, author: 'John Doe', rating: 5, comment: 'Great property!' },
+    { id: 2, author: 'Jane Smith', rating: 4, comment: 'Well maintained' }
+  ]);
+
+  const handleEnquiryChange = (e) => {
+    const { name, value } = e.target;
+    setEnquiryForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEnquirySubmit = () => {
+    if (enquiryForm.name && enquiryForm.email && enquiryForm.phone) {
+      console.log('Enquiry submitted:', enquiryForm);
+      alert('Enquiry submitted successfully!');
+      setEnquiryForm({ name: '', email: '', phone: '', message: '' });
+    } else {
+      alert('Please fill in all required fields');
+    }
+  };
+
   useEffect(() => {
     const fetchProperty = async () => {
       try {
@@ -74,14 +101,6 @@ export default function PropertyDetailsPage() {
     "Water Supply",
     "Electricity Connection"
   ];
-
-  const mockAgent = {
-    name: "Real Estate Agent",
-    title: "Property Specialist",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80",
-    phone: "(555) 123-4567",
-    email: "agent@realestateagency.com"
-  };
 
   return (
     <>
@@ -413,61 +432,101 @@ export default function PropertyDetailsPage() {
           background: #2563eb;
         }
 
-        .contact-agent-card {
+        .enquiry-form-card {
           background: white;
           border: 2px solid #e5e7eb;
           border-radius: 16px;
           padding: 1.5rem;
           margin-top: 1rem;
-          text-align: center;
         }
 
-        .agent-image {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          object-fit: cover;
-          margin: 0 auto 1rem;
-        }
-
-        .agent-name {
-          font-size: 1rem;
-          font-weight: 700;
-          color: #1a1a2e;
-          margin-bottom: 0.25rem;
-        }
-
-        .agent-title {
-          font-size: 0.875rem;
-          color: #6b7280;
+        .enquiry-form-group {
           margin-bottom: 1rem;
         }
 
-        .contact-buttons {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .contact-button {
-          padding: 0.75rem;
-          background: white;
+        .enquiry-input {
+          width: 100%;
+          padding: 0.75rem 1rem;
           border: 2px solid #e5e7eb;
           border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-weight: 600;
-          color: #6b7280;
+          font-size: 0.875rem;
+          outline: none;
+          transition: border-color 0.3s ease;
         }
 
-        .contact-button:hover {
+        .enquiry-input:focus {
           border-color: #3b82f6;
-          color: #3b82f6;
-          background: #eff6ff;
+        }
+
+        .enquiry-textarea {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          outline: none;
+          resize: vertical;
+          min-height: 100px;
+          transition: border-color 0.3s ease;
+        }
+
+        .enquiry-textarea:focus {
+          border-color: #3b82f6;
+        }
+
+        .enquiry-submit-button {
+          width: 100%;
+          padding: 0.875rem;
+          background: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+
+        .enquiry-submit-button:hover {
+          background: #2563eb;
+        }
+
+        .reviews-section {
+          background: white;
+          margin-top: 2rem;
+          padding: 2rem;
+          border-radius: 16px;
+        }
+
+        .review-item {
+          padding: 1.5rem;
+          border-bottom: 1px solid #e5e7eb;
+        }
+
+        .review-item:last-child {
+          border-bottom: none;
+        }
+
+        .review-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+
+        .review-author {
+          font-weight: 700;
+          color: #1a1a2e;
+        }
+
+        .review-rating {
+          color: #f59e0b;
+          font-size: 0.875rem;
+        }
+
+        .review-comment {
+          color: #6b7280;
+          line-height: 1.6;
+          font-size: 0.9375rem;
         }
 
         .content-section {
@@ -751,48 +810,82 @@ export default function PropertyDetailsPage() {
                   </div>
                 </div>
 
-                {/* Schedule Tour Card */}
-                <div className="schedule-tour-card">
-                  <h3 className="card-title">Schedule a Tour</h3>
-                  <div className="form-group">
-                    <label className="form-label">Preferred Date</label>
+                
+                {/* Enquiry Form Card */}
+                <div className="enquiry-form-card">
+                  <h3 className="card-title">Enquire About Property</h3>
+                  <div className="enquiry-form-group">
+                    <label className="form-label">Name *</label>
                     <input 
-                      type="date" 
-                      className="form-input"
-                      value={selectedScheduleDate}
-                      onChange={(e) => setSelectedScheduleDate(e.target.value)}
+                      type="text"
+                      name="name"
+                      className="enquiry-input"
+                      value={enquiryForm.name}
+                      onChange={handleEnquiryChange}
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div className="enquiry-form-group">
+                    <label className="form-label">Email *</label>
+                    <input 
+                      type="email"
+                      name="email"
+                      className="enquiry-input"
+                      value={enquiryForm.email}
+                      onChange={handleEnquiryChange}
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+                  <div className="enquiry-form-group">
+                    <label className="form-label">Phone *</label>
+                    <input 
+                      type="tel"
+                      name="phone"
+                      className="enquiry-input"
+                      value={enquiryForm.phone}
+                      onChange={handleEnquiryChange}
+                      placeholder="+91 98765 43210"
+                    />
+                  </div>
+                  <div className="enquiry-form-group">
+                    <label className="form-label">Message</label>
+                    <textarea
+                      name="message"
+                      className="enquiry-textarea"
+                      value={enquiryForm.message}
+                      onChange={handleEnquiryChange}
+                      placeholder="Tell us more about your inquiry..."
                     />
                   </div>
                   <button 
-                    className="tour-button"
-                    onClick={handleScheduleTour}
+                    className="enquiry-submit-button"
+                    onClick={handleEnquirySubmit}
                   >
-                    Request a Tour
+                    Submit Enquiry
                   </button>
-                </div>
-
-                {/* Contact Agent Card */}
-                <div className="contact-agent-card">
-                  <img 
-                    src={mockAgent.image} 
-                    alt={mockAgent.name}
-                    className="agent-image"
-                  />
-                  <h4 className="agent-name">{mockAgent.name}</h4>
-                  <p className="agent-title">{mockAgent.title}</p>
-                  <div className="contact-buttons">
-                    <button className="contact-button">
-                      <Phone size={18} />
-                      Call Agent
-                    </button>
-                    <button className="contact-button">
-                      <Mail size={18} />
-                      Send Email
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Reviews and Rating Section */}
+        <div className="container">
+          <div className="reviews-section">
+            <h2 className="section-title">Reviews & Ratings</h2>
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <div key={review.id} className="review-item">
+                  <div className="review-header">
+                    <span className="review-author">{review.author}</span>
+                    <span className="review-rating">{'⭐ '.repeat(review.rating)}</span>
+                  </div>
+                  <p className="review-comment">{review.comment}</p>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: '#6b7280' }}>No reviews yet.</p>
+            )}
           </div>
         </div>
 
