@@ -1,122 +1,90 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function SellerPropertiesList() {
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      title: "Modern Family Home",
-      address: "123 Oak Street, New York, NY",
-      price: "₹450,000",
-      bedrooms: 4,
-      bathrooms: 3,
-      sqft: "2,500",
-      status: "Active",
-      views: 245,
-      inquiries: 12,
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop&q=80"
-    },
-    {
-      id: 2,
-      title: "Downtown Luxury Condo",
-      address: "456 Park Avenue, New York, NY",
-      price: "₹625,000",
-      bedrooms: 2,
-      bathrooms: 2,
-      sqft: "1,800",
-      status: "Pending",
-      views: 189,
-      inquiries: 8,
-      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop&q=80"
-    },
-    {
-      id: 3,
-      title: "Cozy Suburban House",
-      address: "789 Maple Drive, Brooklyn, NY",
-      price: "₹380,000",
-      bedrooms: 3,
-      bathrooms: 2,
-      sqft: "1,900",
-      status: "Active",
-      views: 312,
-      inquiries: 15,
-      image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&h=600&fit=crop&q=80"
-    },
-    {
-      id: 4,
-      title: "Elegant Victorian Estate",
-      address: "321 Elm Street, Queens, NY",
-      price: "₹825,000",
-      bedrooms: 5,
-      bathrooms: 4,
-      sqft: "3,400",
-      status: "Sold",
-      views: 567,
-      inquiries: 28,
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop&q=80"
-    },
-    {
-      id: 5,
-      title: "Waterfront Villa",
-      address: "555 Beach Road, Long Island, NY",
-      price: "₹1,250,000",
-      bedrooms: 6,
-      bathrooms: 5,
-      sqft: "4,800",
-      status: "Active",
-      views: 423,
-      inquiries: 22,
-      image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&h=600&fit=crop&q=80"
-    },
-    {
-      id: 6,
-      title: "Urban Studio Apartment",
-      address: "88 Broadway, Manhattan, NY",
-      price: "₹295,000",
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: "850",
-      status: "Active",
-      views: 178,
-      inquiries: 9,
-      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop&q=80"
-    },
-    {
-      id: 7,
-      title: "Contemporary Townhouse",
-      address: "432 Greenwich Ave, Brooklyn, NY",
-      price: "₹780,000",
-      bedrooms: 3,
-      bathrooms: 3,
-      sqft: "2,200",
-      status: "Pending",
-      views: 294,
-      inquiries: 18,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&q=80"
-    },
-    {
-      id: 8,
-      title: "Mountain View Retreat",
-      address: "777 Highland Drive, Upstate NY",
-      price: "₹520,000",
-      bedrooms: 4,
-      bathrooms: 3,
-      sqft: "3,000",
-      status: "Active",
-      views: 356,
-      inquiries: 16,
-      image: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&h=600&fit=crop&q=80"
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+ 
+   const [filter, setFilter] = useState("All");
+ 
+   const filteredProperties = filter === "All" 
+     ? properties 
+     : properties.filter(prop => prop.status === filter);
+ 
+   const getSellerIdFromStorage = () => {
+     try {
+       const st = localStorage.getItem('user');
+       if (!st) return null;
+       const u = JSON.parse(st);
+       return u?.id ?? u?.userId ?? u?.sellerId ?? null;
+     } catch {
+       return null;
+     }
+   };
+
+   const handleView = (id) => {
+    window.location.href = `/PropertyDetailsPage/${id}`;
+  };
+
+  const handleEdit = (id) => {
+    window.location.href = `/AddProperty?edit=${id}`;
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this property?')) return;
+    try {
+      const res = await fetch(`http://localhost:8080/api/properties/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
+      setProperties(prev => prev.filter(p => p.id !== id));
+    } catch (e) {
+      // simple error feedback
+      alert(e.message || 'Failed to delete');
     }
-  ]);
-
-  const [filter, setFilter] = useState("All");
-
-  const filteredProperties = filter === "All" 
-    ? properties 
-    : properties.filter(prop => prop.status === filter);
-
-  return (
-    <>
+  };
+ 
+   useEffect(() => {
+     const load = async () => {
+       setLoading(true);
+       setError('');
+       const sellerId = getSellerIdFromStorage();
+       if (!sellerId) {
+         setError('Seller ID not found. Please login as a seller.');
+         setLoading(false);
+         return;
+       }
+ 
+       try {
+         const res = await fetch(`http://localhost:8080/api/properties/seller/${sellerId}`);
+         if (!res.ok) throw new Error(`Failed to load properties: ${res.status}`);
+         const data = await res.json();
+ 
+         const mapped = (Array.isArray(data) ? data : []).map(item => ({
+           id: item.propertyId,
+           title: item.title,
+           address: `${item.city ?? ''}${item.city && item.state ? ', ' : ''}${item.state ?? ''}${item.pincode ? ' - ' + item.pincode : ''}`,
+           price: `₹${Number(item.price ?? 0).toLocaleString('en-IN')}`,
+           bedrooms: item.bedrooms ?? '-',
+           bathrooms: item.bathrooms ?? '-',
+           sqft: item.sqft ?? '-',
+           status: item.status === 'AVAILABLE' ? 'Active' : item.status === 'SOLD' ? 'Sold' : 'Pending',
+           views: item.views ?? 0,
+           inquiries: item.inquiries ?? 0,
+           image: item.imageUrl || 'https://via.placeholder.com/800x600?text=No+Image'
+         }));
+ 
+         setProperties(mapped);
+       } catch (err) {
+         setError(err?.message || 'Error loading properties');
+       } finally {
+         setLoading(false);
+       }
+     };
+     load();
+   }, []);
+ 
+   return (
+     <>
       <link 
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" 
         rel="stylesheet"
@@ -576,25 +544,25 @@ export default function SellerPropertiesList() {
               <div className="d-flex justify-content-between align-items-center flex-wrap">
                 <div>
                   <button 
-                    className={`filter-btn ₹{filter === 'All' ? 'active' : ''}`}
+                    className={`filter-btn ${filter === 'All' ? 'active' : ''}`}
                     onClick={() => setFilter('All')}
                   >
                     All Properties
                   </button>
                   <button 
-                    className={`filter-btn ₹{filter === 'Active' ? 'active' : ''}`}
+                    className={`filter-btn ${filter === 'Active' ? 'active' : ''}`}
                     onClick={() => setFilter('Active')}
                   >
                     Active
                   </button>
                   <button 
-                    className={`filter-btn ₹{filter === 'Pending' ? 'active' : ''}`}
+                    className={`filter-btn ${filter === 'Pending' ? 'active' : ''}`}
                     onClick={() => setFilter('Pending')}
                   >
                     Pending
                   </button>
                   <button 
-                    className={`filter-btn ₹{filter === 'Sold' ? 'active' : ''}`}
+                    className={`filter-btn ${filter === 'Sold' ? 'active' : ''}`}
                     onClick={() => setFilter('Sold')}
                   >
                     Sold
@@ -610,35 +578,38 @@ export default function SellerPropertiesList() {
 
             {/* Properties Grid */}
             <div className="row">
-              {filteredProperties.map(property => (
-                <div key={property.id} className="col-lg-6">
-                  <div className="property-card">
-                    <img src={property.image} alt={property.title} className="property-image" />
-                    <div className="property-content">
-                      <span className={`status-badge ₹{property.status.toLowerCase()}`}>
-                        {property.status}
-                      </span>
-                      <h3 className="property-title">{property.title}</h3>
-                      <p className="property-address">
-                        <i className="fas fa-map-marker-alt"></i>
-                        {property.address}
-                      </p>
+              {loading && <div className="col-12" style={{ padding: 20 }}>Loading properties...</div>}
+              {error && <div className="col-12" style={{ padding: 20, color: 'red' }}>{error}</div>}
+              {!loading && !error && filteredProperties.map(property => (
+                 <div key={property.id} className="col-lg-6">
+                   <div className="property-card">
+                     <img src={property.image} alt={property.title} className="property-image" />
+                     <div className="property-content">
+                      {/* <span className={`status-badge ₹{property.status.toLowerCase()}`}> */}
+                      <span className={`status-badge ${property.status.toLowerCase()}`}>
+                         {property.status}
+                       </span>
+                       <h3 className="property-title">{property.title}</h3>
+                       <p className="property-address">
+                         <i className="fas fa-map-marker-alt"></i>
+                         {property.address}
+                       </p>
                       <div className="property-price">{property.price}</div>
-                      <div className="property-details">
-                        <div className="detail-item">
-                          <i className="fas fa-bed"></i>
-                          <span>{property.bedrooms} Beds</span>
-                        </div>
-                        <div className="detail-item">
-                          <i className="fas fa-bath"></i>
-                          <span>{property.bathrooms} Baths</span>
-                        </div>
-                        <div className="detail-item">
-                          <i className="fas fa-ruler-combined"></i>
-                          <span>{property.sqft} sqft</span>
-                        </div>
-                      </div>
-                      <div className="property-stats">
+                       <div className="property-details">
+                         <div className="detail-item">
+                           <i className="fas fa-bed"></i>
+                           <span>{property.bedrooms} Beds</span>
+                         </div>
+                         <div className="detail-item">
+                           <i className="fas fa-bath"></i>
+                           <span>{property.bathrooms} Baths</span>
+                         </div>
+                         <div className="detail-item">
+                           <i className="fas fa-ruler-combined"></i>
+                           <span>{property.sqft} sqft</span>
+                         </div>
+                       </div>
+                       <div className="property-stats">
                         <div className="stat-item">
                           <div className="stat-number">{property.views}</div>
                           <div className="stat-label">Views</div>
@@ -647,26 +618,23 @@ export default function SellerPropertiesList() {
                           <div className="stat-number">{property.inquiries}</div>
                           <div className="stat-label">Inquiries</div>
                         </div>
-                      </div>
-                      <div className="property-actions">
-                        <button className="btn-action btn-view">
-                          <i className="fas fa-eye me-1"></i> View
-                        </button>
-                        <button className="btn-action btn-edit">
-                          <i className="fas fa-edit me-1"></i> Edit
-                        </button>
-                        <button className="btn-action btn-delete">
-                          <i className="fas fa-trash me-1"></i> Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
-    </>
-  );
-}
+                       </div>
+
+                       {/* Action buttons */}
+                       <div className="property-actions" style={{ marginTop: 10 }}>
+                         <button className="btn-action btn-view" onClick={() => handleView(property.id)}>View</button>
+                         <button className="btn-action btn-edit" onClick={() => handleEdit(property.id)}>Edit</button>
+                         <button className="btn-action btn-delete" onClick={() => handleDelete(property.id)}>Delete</button>
+                       </div>
+                       
+                     </div>
+                   </div>
+                 </div>
+               ))}
+             </div>
+           </div>
+         </section>
+       </div>
+     </>
+   );
+ }

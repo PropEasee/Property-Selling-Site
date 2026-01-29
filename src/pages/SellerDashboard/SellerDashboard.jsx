@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home, Plus, Eye, MessageSquare, TrendingUp, DollarSign, Bell, User, Search, Settings, LogOut, Menu, X, Edit, Trash2, MapPin, BarChart3 } from 'lucide-react';
 
 export default function SellerDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showAddPropertyModal, setShowAddPropertyModal] = useState(false);
+  const [totalViews, setTotalViews] = useState(0);
 
   const stats = [
     { label: 'Total Properties', value: '12', icon: Home, color: '#3b82f6' },
-    { label: 'Total Views', value: '2,847', icon: Eye, color: '#10b981' },
+    { label: 'Total Views', value: totalViews?.toLocaleString ? totalViews.toLocaleString('en-IN') : String(totalViews), icon: Eye, color: '#10b981' },
     { label: 'Total Inquiries', value: '34', icon: MessageSquare, color: '#f59e0b' },
     { label: 'Total Sales', value: '₹4.2M', icon: DollarSign, color: '#8b5cf6' }
   ];
@@ -87,6 +88,34 @@ export default function SellerDashboard() {
     { id: 2, action: "Property viewed", property: "103/143 West Street", time: "5 hours ago" },
     { id: 3, action: "Listed new property", property: "78 Beach Road", time: "1 day ago" }
   ];
+
+  const getSellerIdFromStorage = () => {
+    try {
+      const st = localStorage.getItem('user');
+      if (!st) return null;
+      const u = JSON.parse(st);
+      return u?.id ?? u?.userId ?? u?.sellerId ?? null;
+    } catch {
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const loadViews = async () => {
+      const sellerId = getSellerIdFromStorage();
+      if (!sellerId) return;
+      try {
+        const res = await fetch(`http://localhost:8080/api/properties/sellers/${sellerId}/viewsCount`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const sum = Array.isArray(data) ? data.reduce((acc, item) => acc + (Number(item.viewsCount) || 0), 0) : 0;
+        setTotalViews(sum);
+      } catch (e) {
+        // ignore/fallback
+      }
+    };
+    loadViews();
+  }, []);
 
   return (
     <>

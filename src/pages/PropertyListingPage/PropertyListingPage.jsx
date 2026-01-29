@@ -11,6 +11,30 @@ export default function PropertyListingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // helper to read current user id from localStorage (matches other files)
+  const getStoredUserId = () => {
+    try {
+      const st = localStorage.getItem('user');
+      if (!st) return null;
+      const u = JSON.parse(st);
+      return u?.userId ?? u?.id ?? u?.user_id ?? null;
+    } catch {
+      return null;
+    }
+  };
+
+  // fire-and-forget POST to count view when user clicks a property
+  const sendView = (propertyId) => {
+    const userId = getStoredUserId();
+    fetch('http://localhost:8080/api/properties/view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ propertyId, userId }),
+    }).catch(() => {
+      // ignore errors for now
+    }).then(console.log(Response));
+  };
+ 
   const propertie = [
     {
       id: 1,
@@ -543,6 +567,7 @@ export default function PropertyListingPage() {
                   to={`/PropertyDetailsPage/${p.propertyId}`}
                   key={p.propertyId}
                   className="property-card"
+                  onClick={() => sendView(p.propertyId)}
                   style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                   >
                   <div className="property-image-container">
