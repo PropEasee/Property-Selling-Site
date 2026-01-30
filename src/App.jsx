@@ -21,6 +21,7 @@ import AdminPropertyList from './pages/AdminPropertyList/AdminPropertyList'
 import AdminUsersList from './pages/AdminUsersList/AdminUsersList'
 import AddProperty from './pages/AddProperty/AddProperty'
 import BuyerProfile from './pages/BuyerProfile/BuyerProfile'
+import SellerEnquiriesPage from './pages/SellerEnquiriesPage/SellerEnquiriesPage'
 
 function App() {
 
@@ -48,6 +49,7 @@ function App() {
             <Route path='AboutUs' element={<AboutUs />} />
             <Route path='AdminPropertyList' element={<AdminPropertyList />} />
             <Route path='AdminUsersList' element={<AdminUsersList />} />
+            <Route path="/SellerEnquiries" element={<SellerEnquiriesPage />} />
           </Route>
 
           {/* Fallback: redirect unknown routes to login (adjust if you prefer different behavior) */}

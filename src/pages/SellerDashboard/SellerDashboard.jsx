@@ -6,15 +6,30 @@ export default function SellerDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showAddPropertyModal, setShowAddPropertyModal] = useState(false);
   const [totalViews, setTotalViews] = useState(0);
+  const [totalInquiries, setTotalInquiries] = useState(0); // New state for total inquiries
+  const [listedProperties, setListedProperties] = useState([]); // Updated to fetch dynamically
+  const [totalProperties, setTotalProperties] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);
+  const [recentInquiries, setRecentInquiries] = useState([]);
 
+
+    const formatCurrency = (amount) => {
+    if (amount >= 10000000) {
+      return `₹${(amount / 10000000).toFixed(1)} Cr`; // Convert to Crores
+    } else if (amount >= 100000) {
+      return `₹${(amount / 100000).toFixed(1)} Lac`; // Convert to Lakhs
+    } else {
+      return `₹${amount.toLocaleString('en-IN')}`; // Show full number for smaller amounts
+    }
+  };
   const stats = [
-    { label: 'Total Properties', value: '12', icon: Home, color: '#3b82f6' },
+    { label: 'Total Properties', value: totalProperties, icon: Home, color: '#3b82f6' },
     { label: 'Total Views', value: totalViews?.toLocaleString ? totalViews.toLocaleString('en-IN') : String(totalViews), icon: Eye, color: '#10b981' },
-    { label: 'Total Inquiries', value: '34', icon: MessageSquare, color: '#f59e0b' },
-    { label: 'Total Sales', value: '₹4.2M', icon: DollarSign, color: '#8b5cf6' }
+    { label: 'Total Inquiries', value: totalInquiries, icon: MessageSquare, color: '#f59e0b' }, // Updated to use totalInquiries
+    { label: 'Total Sales', value: formatCurrency(totalSales), icon: DollarSign, color: '#8b5cf6' }
   ];
 
-  const listedProperties = [
+  const listedPropertie = [
     {
       id: 1,
       image: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&q=80",
@@ -59,7 +74,7 @@ export default function SellerDashboard() {
     }
   ];
 
-  const recentInquiries = [
+  const recentInquirie = [
     {
       id: 1,
       buyerName: "John Smith",
@@ -100,21 +115,67 @@ export default function SellerDashboard() {
     }
   };
 
+
   useEffect(() => {
-    const loadViews = async () => {
+    const loadDashboardData = async () => {
       const sellerId = getSellerIdFromStorage();
       if (!sellerId) return;
+
       try {
-        const res = await fetch(`http://localhost:8080/api/properties/sellers/${sellerId}/viewsCount`);
-        if (!res.ok) return;
-        const data = await res.json();
-        const sum = Array.isArray(data) ? data.reduce((acc, item) => acc + (Number(item.viewsCount) || 0), 0) : 0;
-        setTotalViews(sum);
-      } catch (e) {
-        // ignore/fallback
+        // Fetch total views
+        const viewsRes = await fetch(`http://localhost:8080/api/properties/sellers/${sellerId}/viewsCount`);
+        if (viewsRes.ok) {
+          const viewsData = await viewsRes.json();
+          const viewsSum = Array.isArray(viewsData) ? viewsData.reduce((acc, item) => acc + (Number(item.viewsCount) || 0), 0) : 0;
+          setTotalViews(viewsSum);
+        }
+
+        // Fetch total inquiries
+        const inquiriesRes = await fetch(`http://localhost:8080/api/enquiries/seller/${sellerId}/total-count`);
+        if (inquiriesRes.ok) {
+          const inquiriesData = await inquiriesRes.json();
+          setTotalInquiries(inquiriesData.totalCount || 0);
+        }
+
+        // Fetch properties
+        const propertiesRes = await fetch(`http://localhost:8080/api/properties/seller/${sellerId}`);
+        if (propertiesRes.ok) {
+          const propertiesData = await propertiesRes.json();
+          // Update total properties
+          setTotalProperties(propertiesData.length);
+
+           // Calculate total sales (sum of sold properties' prices)
+          const totalSalesSum = propertiesData
+            .filter((property) => property.status === 'SOLD')
+            .reduce((acc, property) => acc + (Number(property.price) || 0), 0);
+          setTotalSales(totalSalesSum);
+
+          // Filter and sort properties for the "My Properties" card
+          const filteredProperties = propertiesData
+            .filter((property) => property.status === 'AVAILABLE') // Only available properties
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by latest createdAt
+            .slice(0, 4); // Get the latest 4 properties
+          setListedProperties(filteredProperties);
+        }
+
+        // Fetch recent inquiries
+        const inquiriesResponse = await fetch(`http://localhost:8080/api/enquiries`);
+        if (inquiriesResponse.ok) {
+          const inquiriesData = await inquiriesResponse.json();
+          // Limit recent inquiries to the latest 3
+          const filteredInquiries = inquiriesData
+            .filter((inquiry) => inquiry.property.seller.userId === sellerId)
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by latest createdAt
+            .slice(0, 3); // Get the latest 3 inquiries
+          setRecentInquiries(filteredInquiries);
+        }
+        
+       } catch (e) {
+        console.error('Error fetching data:', e);
       }
     };
-    loadViews();
+
+    loadDashboardData();
   }, []);
 
   return (
@@ -895,13 +956,15 @@ export default function SellerDashboard() {
               <Home className="nav-icon" />
               <span className="nav-label">Overview</span>
             </div>
+            <a href="/SellerPropertiesList">
             <div className={`nav-item ₹{activeTab === 'properties' ? 'active' : ''}`} onClick={() => setActiveTab('properties')}>
               <Home className="nav-icon" />
               <span className="nav-label">My Properties</span>
             </div>
+            </a>
             <div className={`nav-item ₹{activeTab === 'inquiries' ? 'active' : ''}`} onClick={() => setActiveTab('inquiries')}>
               <MessageSquare className="nav-icon" />
-              <span className="nav-label">Inquiries</span>
+              <a href="/SellerEnquiries" className="nav-label">All Enquiries</a>
             </div>
             <div className={`nav-item ₹{activeTab === 'analytics' ? 'active' : ''}`} onClick={() => setActiveTab('analytics')}>
               <BarChart3 className="nav-icon" />
@@ -910,10 +973,7 @@ export default function SellerDashboard() {
 
             <div className="nav-divider"></div>
 
-            <div className={`nav-item ₹{activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
-              <Settings className="nav-icon" />
-              <span className="nav-label">Settings</span>
-            </div>
+           
             <div className="nav-item">
               <LogOut className="nav-icon" />
               <span className="nav-label">Logout</span>
@@ -941,15 +1001,19 @@ export default function SellerDashboard() {
             </div>
 
             <div className="top-bar-actions">
+              <a href="/AddProperty">
               <button className="add-property-button" onClick={() => setShowAddPropertyModal(true)}>
                 <Plus size={18} />
                 <span>List Property</span>
               </button>
+              </a>
               <button className="icon-button">
                 <Bell size={20} />
                 <span className="notification-badge">5</span>
               </button>
+              <a href="/AdminProfile">
               <div className="user-avatar">SE</div>
+              </a>
             </div>
           </div>
 
@@ -964,7 +1028,7 @@ export default function SellerDashboard() {
             <div className="stats-grid">
               {stats.map((stat, index) => (
                 <div key={index} className="stat-card">
-                  <div className="stat-icon" style={{ background: `₹{stat.color}15` }}>
+                  <div className="stat-icon" style={{ background: `${stat.color}15` }}>
                     <stat.icon size={24} style={{ color: stat.color }} />
                   </div>
                   <div className="stat-content">
@@ -981,34 +1045,32 @@ export default function SellerDashboard() {
               <div className="card">
                 <div className="card-header">
                   <h2 className="card-title">My Properties</h2>
-                  <a className="view-all-link">View All</a>
+                  <a href="/SellerPropertiesList"><a className="view-all-link">View All</a></a>
                 </div>
                 <div className="property-list">
                   {listedProperties.map((property) => (
-                    <div key={property.id} className="property-item">
-                      <img src={property.image} alt={property.title} className="property-image-small" />
+                    <div key={property.propertyId} className="property-item">
+                      <img src={property.imageUrl || 'https://via.placeholder.com/80'} alt={property.title} className="property-image-small" />
                       <div className="property-info">
                         <div className="property-header-row">
-                          <div className="property-name">{property.title}</div>
-                          <span className={`status-badge status-₹{property.status.toLowerCase()}`}>
-                            {property.status}
+                          <div className="property-name">{property.title || 'N/A'}</div>
+                          <span className={`status-badge status-${property.status?.toLowerCase() || 'unknown'}`}>
+                            {property.status || 'Unknown'}
                           </span>
                         </div>
                         <div className="property-stats">
                           <div className="stat-item">
-                            <Eye size={14} />
-                            <span>{property.views} views</span>
+                            <MapPin size={14} />
+                            <span>{property.city || 'N/A'}, {property.state || 'N/A'}</span>
                           </div>
                           <div className="stat-item">
-                            <MessageSquare size={14} />
-                            <span>{property.inquiries} inquiries</span>
+                            <span>₹{property.price?.toLocaleString('en-IN') || 'N/A'}</span>
                           </div>
                         </div>
                         <div className="property-location-small">
                           <MapPin size={14} />
-                          <span>{property.location}</span>
+                          <span>{property.pincode || 'N/A'}</span>
                         </div>
-                        <div className="property-price-small">{property.price}</div>
                       </div>
                       <div className="property-actions">
                         <button className="action-button" title="Edit Property">
@@ -1026,45 +1088,36 @@ export default function SellerDashboard() {
               {/* Right Column */}
               <div>
                 {/* Recent Inquiries */}
-                <div className="card" style={{ marginBottom: '2rem' }}>
-                  <div className="card-header">
-                    <h2 className="card-title">Recent Inquiries</h2>
-                  </div>
-                  {recentInquiries.map((inquiry) => (
-                    <div key={inquiry.id} className="inquiry-item">
+                <div className="card">
+                <div className="card-header">
+                  <h2 className="card-title">Recent Inquiries</h2>
+                </div>
+                {recentInquiries.length > 0 ? (
+                  recentInquiries.map((inquiry) => (
+                    <div key={inquiry.enquiryId} className="inquiry-item">
                       <div className="inquiry-info">
-                        <div className="inquiry-buyer">{inquiry.buyerName}</div>
-                        <div className="inquiry-property">{inquiry.property}</div>
-                        <div className="inquiry-message">"{inquiry.message}"</div>
-                        <div className="inquiry-date">{inquiry.date}</div>
-                      </div>
-                      <div className="inquiry-actions">
-                        <button className="reply-button">Reply</button>
+                        <div className="inquiry-buyer">
+                          <strong>Buyer:</strong> {inquiry.buyer.name} ({inquiry.buyer.email})
+                        </div>
+                        <div className="inquiry-property">
+                          <strong>Property:</strong> {inquiry.property.title} ({inquiry.property.city}, {inquiry.property.state})
+                        </div>
+                        <div className="inquiry-message">
+                          <strong>Message:</strong> "{inquiry.message}"
+                        </div>
+                        <div className="inquiry-date">
+                          <strong>Date:</strong> {new Date(inquiry.createdAt).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div>No recent inquiries found.</div>
+                )}
+              </div>
 
                 {/* Recent Activity */}
-                <div className="card">
-                  <div className="card-header">
-                    <h2 className="card-title">Recent Activity</h2>
-                  </div>
-                  <div className="activity-list">
-                    {recentActivity.map((activity) => (
-                      <div key={activity.id} className="activity-item">
-                        <div className="activity-icon-wrapper">
-                          <MessageSquare size={18} style={{ color: '#3b82f6' }} />
-                        </div>
-                        <div className="activity-content">
-                          <div className="activity-action">{activity.action}</div>
-                          <div className="activity-property">{activity.property}</div>
-                          <div className="activity-time">{activity.time}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+               
               </div>
             </div>
           </div>
