@@ -1,18 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home, Heart, Calendar, Bell, User, Search, TrendingUp, Eye, MapPin, MessageSquare, Settings, LogOut, Menu, X } from 'lucide-react';
 
 export default function BuyerDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [savedPropertiesCount, setSavedPropertiesCount] = useState(0);
+  const [savedProperties, setSavedProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSavedProperties = async () => {
+      try {
+        // Get user ID from localStorage
+        let userId = null;
+        try {
+          const stored = localStorage.getItem('user');
+          if (stored) {
+            const u = JSON.parse(stored);
+            userId = u?.id ?? u?.userId ?? u?.user_id ?? null;
+          }
+        } catch (e) {
+          userId = null;
+        }
+
+        if (!userId) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`http://localhost:8080/api/property-likes/buyer/${userId}`);
+        if (!response.ok) throw new Error('Failed to fetch saved properties');
+        
+        const data = await response.json();
+        setSavedPropertiesCount(data.length);
+        setSavedProperties(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching saved properties:', err);
+        setLoading(false);
+      }
+    };
+
+    fetchSavedProperties();
+  }, []);
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(price);
+  };
 
   const stats = [
-    { label: 'Saved Properties', value: '24', icon: Heart, color: '#3b82f6' },
+    { label: 'Saved Properties', value: savedPropertiesCount, icon: Heart, color: '#3b82f6' },
     { label: 'Property Views', value: '156', icon: Eye, color: '#10b981' },
     { label: 'Scheduled Tours', value: '5', icon: Calendar, color: '#f59e0b' },
     { label: 'New Matches', value: '12', icon: TrendingUp, color: '#8b5cf6' }
   ];
 
-  const savedProperties = [
+  const savedPropertiesDummy = [
     {
       id: 1,
       image: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&q=80",
@@ -692,24 +735,37 @@ export default function BuyerDashboard() {
                   <h2 className="card-title">Saved Properties</h2>
                   <a className="view-all-link">View All</a>
                 </div>
-                <div className="property-list">
-                  {savedProperties.map((property) => (
-                    <div key={property.id} className="property-item">
-                      <img src={property.image} alt={property.title} className="property-image-small" />
-                      <div className="property-info">
-                        <div className="property-name">{property.title}</div>
-                        <div className="property-location-small">
-                          <MapPin size={14} />
-                          <span>{property.location}</span>
+                {loading ? (
+                  <p style={{ color: '#6b7280' }}>Loading saved properties...</p>
+                ) : savedProperties.length > 0 ? (
+                  <div className="property-list">
+                    {savedProperties.map((like) => {
+                      const property = like.property;
+                      const image = property.images && property.images.length > 0 
+                        ? property.images[0].imageUrl 
+                        : 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&q=80';
+                      
+                      return (
+                        <div key={like.likeId} className="property-item">
+                          <img src={image} alt={property.title} className="property-image-small" />
+                          <div className="property-info">
+                            <div className="property-name">{property.title}</div>
+                            <div className="property-location-small">
+                              <MapPin size={14} />
+                              <span>{property.city}, {property.state}</span>
+                            </div>
+                            <div className="property-price-small">{formatPrice(property.price)}</div>
+                          </div>
+                          <span className={`status-badge ${property.status === 'AVAILABLE' ? 'status-available' : 'status-pending'}`}>
+                            {property.status}
+                          </span>
                         </div>
-                        <div className="property-price-small">{property.price}</div>
-                      </div>
-                      <span className={`status-badge ₹{property.status === 'Available' ? 'status-available' : 'status-pending'}`}>
-                        {property.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p style={{ color: '#6b7280' }}>No saved properties yet.</p>
+                )}
               </div>
 
               {/* Right Column */}

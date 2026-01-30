@@ -75,6 +75,46 @@ export default function PropertyDetailsPage() {
     }
   };
 
+  const handleSaveProperty = async () => {
+    // get logged-in user id from localStorage
+    let userId = null;
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        userId = u?.id ?? u?.userId ?? u?.user_id ?? null;
+      }
+    } catch (e) {
+      userId = null;
+    }
+
+    if (!userId) {
+      alert('Please login to like a property.');
+      return;
+    }
+
+    const propertyIdToUse = property?.propertyId ?? property?.property_id ?? Number(propertyId);
+
+    try {
+      const res = await fetch(`http://localhost:8080/api/property-likes/${userId}/${propertyIdToUse}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || 'Failed to like property');
+      }
+
+      // Toggle the saved state
+      setIsSaved(!isSaved);
+      alert('Property liked successfully!');
+    } catch (err) {
+      alert(err.message || 'Error liking property');
+    }
+  };
+
   useEffect(() => {
     const fetchProperty = async () => {
       try {
@@ -805,7 +845,7 @@ export default function PropertyDetailsPage() {
                   <div className="action-buttons">
                     <button 
                       className={`icon-button ${isSaved ? 'saved' : ''}`}
-                      onClick={() => setIsSaved(!isSaved)}
+                      onClick={handleSaveProperty}
                     >
                       <Heart size={24} fill={isSaved ? 'currentColor' : 'none'} />
                     </button>
