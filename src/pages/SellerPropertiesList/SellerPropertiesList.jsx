@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function SellerPropertiesList() {
   const [properties, setProperties] = useState([]);
@@ -34,7 +35,7 @@ export default function SellerPropertiesList() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this property?')) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/properties/${id}`, { method: 'DELETE' });
+      const res = await fetchWithAuth(`http://localhost:8080/api/properties/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
       setProperties(prev => prev.filter(p => p.id !== id));
     } catch (e) {
@@ -55,7 +56,7 @@ export default function SellerPropertiesList() {
        }
  
        try {
-         const res = await fetch(`http://localhost:8080/api/properties/seller/${sellerId}`);
+         const res = await fetchWithAuth(`http://localhost:8080/api/properties/seller/${sellerId}`);
          if (!res.ok) throw new Error(`Failed to load properties: ${res.status}`);
          const data = await res.json();
  

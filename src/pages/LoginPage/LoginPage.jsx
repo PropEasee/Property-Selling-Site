@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
+import { jwtDecode } from 'jwt-decode';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,18 +30,29 @@ export default function LoginPage() {
         throw new Error('Invalid email or password');
       }
 
-      const user = await response.json();
+      const data = await response.json();
+      const token = data.token; // Assuming the token is returned as `token`
 
+          // Decode the token to extract user data
+    const decodedToken = jwtDecode(token);
+    // console.log('Decoded Token:', decodedToken);
+
+      // Store token in localStorage
+      localStorage.setItem('token', token);
       // Save logged-in user
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Redirect based on role
-      if (user.role === 'ADMIN') {
-        navigate('/AdminProfile');
-      } else if (user.role === 'SELLER') {
+      console.log(data);
+
+       // Redirect to dashboard (based on user role)
+      if (data.user.role === 'SELLER') {
         navigate('/SellerDashboard');
-      } else {
+      } else if (data.user.role === 'BUYER') {
         navigate('/home');
+      } else if (data.user.role === 'ADMIN') {
+        navigate('/AdminDashboard');
+      } else {
+        throw new Error('Invalid user role');
       }
 
     } catch (err) {

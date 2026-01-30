@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Users, Home, ArrowUp, ArrowDown, Eye, Edit2, Trash2, Search
 } from 'lucide-react';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -20,7 +21,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/admin/stats`);
+        const response = await fetchWithAuth(`${API_BASE_URL}/admin/stats`);
         if (!response.ok) throw new Error('Failed to fetch stats');
         const data = await response.json();
         console.log('Stats API Response:', data);
@@ -77,7 +78,7 @@ export default function AdminDashboard() {
           ? `${API_BASE_URL}/admin/properties?search=${searchTerm}`
           : `${API_BASE_URL}/admin/properties/no-images`;
         
-        const response = await fetch(url);
+        const response = await fetchWithAuth(url);
         if (!response.ok) throw new Error('Failed to fetch properties');
         const data = await response.json();
         console.log('Properties API Response:', data);
@@ -98,7 +99,7 @@ export default function AdminDashboard() {
           ? `${API_BASE_URL}/users?page=0&size=100&search=${searchTerm}`
           : `${API_BASE_URL}/users?page=0&size=100`;
         
-        const response = await fetch(url);
+        const response = await fetchWithAuth(url);
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
         const userList = data.content || [];
@@ -131,7 +132,7 @@ export default function AdminDashboard() {
     if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
       try {
         const endpoint = type === 'user' ? `/users/${id}` : `/admin/properties/${id}`;
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
           method: 'DELETE'
         });
         if (!response.ok) throw new Error(`Failed to delete ${type}`);
@@ -150,7 +151,7 @@ export default function AdminDashboard() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/properties/${id}/force-status`, {
+      const response = await fetchWithAuth(`${API_BASE_URL}/admin/properties/${id}/force-status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

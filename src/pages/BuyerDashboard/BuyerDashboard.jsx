@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Home, Heart, Calendar, Bell, User, Search, TrendingUp, Eye, MapPin, MessageSquare, Settings, LogOut, Menu, X } from 'lucide-react';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function BuyerDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -28,7 +29,7 @@ export default function BuyerDashboard() {
           return;
         }
 
-        const response = await fetch(`http://localhost:8080/api/property-likes/buyer/${userId}`);
+        const response = await fetchWithAuth(`http://localhost:8080/api/property-likes/buyer/${userId}`);
         if (!response.ok) throw new Error('Failed to fetch saved properties');
         
         const data = await response.json();

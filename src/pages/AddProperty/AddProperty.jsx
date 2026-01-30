@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Upload, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function AddProperty() {
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ export default function AddProperty() {
     if (formData.status) createPayload.status = formData.status;
 
     try {
-      const createRes = await fetch('http://localhost:8080/api/properties', {
+      const createRes = await fetchWithAuth('http://localhost:8080/api/properties', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(createPayload)
@@ -115,7 +116,7 @@ export default function AddProperty() {
         const form = new FormData();
         images.forEach((file) => form.append('images', file)); // backend expects 'images'
 
-        const uploadRes = await fetch(`http://localhost:8080/api/properties/${propertyId}/images`, {
+        const uploadRes = await fetchWithAuth(`http://localhost:8080/api/properties/${propertyId}/images`, {
           method: 'POST',
           body: form
         });

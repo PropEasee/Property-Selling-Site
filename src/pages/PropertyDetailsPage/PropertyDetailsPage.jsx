@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Heart, Share2, Phone, Mail, User, Calendar, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { useParams } from 'react-router-dom';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function PropertyDetailsPage() {
   const { propertyId } = useParams();
@@ -56,7 +57,7 @@ export default function PropertyDetailsPage() {
     };
 
     try {
-      const res = await fetch('http://localhost:8080/api/enquiries', {
+      const res = await fetchWithAuth('http://localhost:8080/api/enquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -96,7 +97,7 @@ export default function PropertyDetailsPage() {
     const propertyIdToUse = property?.propertyId ?? property?.property_id ?? Number(propertyId);
 
     try {
-      const res = await fetch(`http://localhost:8080/api/property-likes/${userId}/${propertyIdToUse}`, {
+      const res = await fetchWithAuth(`http://localhost:8080/api/property-likes/${userId}/${propertyIdToUse}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
@@ -118,7 +119,7 @@ export default function PropertyDetailsPage() {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/properties/${propertyId || 3}`);
+        const response = await fetchWithAuth(`http://localhost:8080/api/properties/${propertyId || 3}`);
         if (!response.ok) throw new Error('Failed to fetch property');
         const data = await response.json();
         setProperty(data);

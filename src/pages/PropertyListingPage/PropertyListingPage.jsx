@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Home, Bed, Bath, Square, Heart, Share2, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function PropertyListingPage() {
  const [searchTerm, setSearchTerm] = useState('');
@@ -24,15 +25,16 @@ export default function PropertyListingPage() {
   };
 
   // fire-and-forget POST to count view when user clicks a property
-  const sendView = (propertyId) => {
-    const userId = getStoredUserId();
-    fetch('http://localhost:8080/api/properties/view', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ propertyId, userId }),
-    }).catch(() => {
-      // ignore errors for now
-    }).then(console.log(Response));
+  const sendView = async (propertyId) => {
+    try {
+      await fetchWithAuth('http://localhost:8080/api/properties/view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ propertyId }),
+      });
+    } catch (err) {
+      console.error('Error sending view:', err);
+    }
   };
  
   const propertie = [
@@ -111,26 +113,21 @@ export default function PropertyListingPage() {
   ];
 
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    fetch('http://localhost:8080/api/properties')
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch properties');
-        return res.json();
-      })
-      .then((data) => {
-        if (mounted) {
-          setProperties(data || []);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (mounted) {
-          setError(err.message);
-          setLoading(false);
-        }
-      });
-    return () => { mounted = false; };
+    const fetchProperties = async () => {
+      setLoading(true);
+      try {
+        const response = await fetchWithAuth('http://localhost:8080/api/properties');
+        if (!response.ok) throw new Error('Failed to fetch properties');
+        const data = await response.json();
+        setProperties(data || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
   }, []);
 
   const uniqueCities = ['all', ...Array.from(new Set(properties.map(p => p.city).filter(Boolean)))];

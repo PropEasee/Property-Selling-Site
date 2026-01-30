@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, Calendar, LogOut, Clipboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function BuyerProfile() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export default function BuyerProfile() {
       }
 
       try {
-        const res = await fetch(`http://localhost:8080/api/users/${userId}`);
+        const res = await fetchWithAuth(`http://localhost:8080/api/users/${userId}`);
         if (!res.ok) throw new Error('Failed to fetch user details');
         const data = await res.json();
         setUser(data);
@@ -79,7 +80,7 @@ export default function BuyerProfile() {
 
     try {
       const payload = { name: editName, phone: editPhone };
-      const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+      const res = await fetchWithAuth(`http://localhost:8080/api/users/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

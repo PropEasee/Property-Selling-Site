@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Home, Plus, Eye, MessageSquare, TrendingUp, DollarSign, Bell, User, Search, Settings, LogOut, Menu, X, Edit, Trash2, MapPin, BarChart3 } from 'lucide-react';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function SellerDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -115,6 +116,17 @@ export default function SellerDashboard() {
     }
   };
 
+   const getSellernameFromStorage = () => {
+    try {
+      const st = localStorage.getItem('user');
+      if (!st) return null;
+      const u = JSON.parse(st);
+      return u?.name ?? u?.name ?? u?.sellerId ?? null;
+    } catch {
+      return null;
+    }
+  };
+  const sellername = getSellernameFromStorage();
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -123,7 +135,7 @@ export default function SellerDashboard() {
 
       try {
         // Fetch total views
-        const viewsRes = await fetch(`http://localhost:8080/api/properties/sellers/${sellerId}/viewsCount`);
+        const viewsRes = await fetchWithAuth(`http://localhost:8080/api/properties/sellers/${sellerId}/viewsCount`);
         if (viewsRes.ok) {
           const viewsData = await viewsRes.json();
           const viewsSum = Array.isArray(viewsData) ? viewsData.reduce((acc, item) => acc + (Number(item.viewsCount) || 0), 0) : 0;
@@ -131,14 +143,14 @@ export default function SellerDashboard() {
         }
 
         // Fetch total inquiries
-        const inquiriesRes = await fetch(`http://localhost:8080/api/enquiries/seller/${sellerId}/total-count`);
+        const inquiriesRes = await fetchWithAuth(`http://localhost:8080/api/enquiries/seller/${sellerId}/total-count`);
         if (inquiriesRes.ok) {
           const inquiriesData = await inquiriesRes.json();
           setTotalInquiries(inquiriesData.totalCount || 0);
         }
 
         // Fetch properties
-        const propertiesRes = await fetch(`http://localhost:8080/api/properties/seller/${sellerId}`);
+        const propertiesRes = await fetchWithAuth(`http://localhost:8080/api/properties/seller/${sellerId}`);
         if (propertiesRes.ok) {
           const propertiesData = await propertiesRes.json();
           // Update total properties
@@ -159,7 +171,7 @@ export default function SellerDashboard() {
         }
 
         // Fetch recent inquiries
-        const inquiriesResponse = await fetch(`http://localhost:8080/api/enquiries`);
+        const inquiriesResponse = await fetchWithAuth(`http://localhost:8080/api/enquiries`);
         if (inquiriesResponse.ok) {
           const inquiriesData = await inquiriesResponse.json();
           // Limit recent inquiries to the latest 3
@@ -1020,7 +1032,7 @@ export default function SellerDashboard() {
           {/* Content Area */}
           <div className="content-area">
             <div className="page-header">
-              <h1 className="page-title">Welcome back, Seller!</h1>
+              <h1 className="page-title">Welcome back, {sellername}</h1>
               <p className="page-subtitle">Manage your properties and track inquiries</p>
             </div>
 

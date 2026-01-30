@@ -4,6 +4,7 @@ import {
   ChevronLeft, ChevronRight, AlertCircle, MoreVertical, X,
   User, Users, Phone, Calendar, MapPin, CheckCircle, XCircle
 } from 'lucide-react';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -30,7 +31,7 @@ export default function AdminUsersList() {
   // Fetch admin stats
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/stats`, {
+      const response = await fetchWithAuth(`${API_BASE_URL}/admin/stats`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ export default function AdminUsersList() {
       if (search) params.append('search', search);
       if (role) params.append('role', role);
 
-      const response = await fetch(`${API_BASE_URL}/users?${params}`, {
+      const response = await fetchWithAuth(`${API_BASE_URL}/users?${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +167,7 @@ export default function AdminUsersList() {
       console.log('Endpoint:', endpoint);
       console.log('Payload:', JSON.stringify(payload));
 
-      const response = await fetch(endpoint, {
+      const response = await fetchWithAuth(endpoint, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -231,7 +232,7 @@ export default function AdminUsersList() {
       
       console.log('Deleting user with endpoint:', endpoint);
       
-      const response = await fetch(endpoint, {
+      const response = await fetchWithAuth(endpoint, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

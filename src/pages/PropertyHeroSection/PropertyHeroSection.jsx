@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, ChevronDown } from 'lucide-react';
 import Header from '../../Component/Header';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function PropertyHeroSection() {
   const [activeTab, setActiveTab] = useState('rent');
@@ -14,7 +15,7 @@ export default function PropertyHeroSection() {
       setLoadingRecent(true);
       setRecentError('');
       try {
-        const res = await fetch('http://localhost:8080/api/properties');
+        const res = await fetchWithAuth('http://localhost:8080/api/properties');
         if (!res.ok) throw new Error('Failed to fetch properties');
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data?.data || []);

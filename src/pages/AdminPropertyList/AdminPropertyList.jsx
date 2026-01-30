@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Search, ChevronLeft, ChevronRight, MapPin
 } from 'lucide-react';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 const API_BASE_URL = 'http://localhost:8080/api/admin';
 
@@ -30,7 +31,7 @@ export default function AdminPropertyList() {
         ? `${API_BASE_URL}/properties?search=${encodeURIComponent(search)}`
         : `${API_BASE_URL}/properties/no-images`;
 
-      const response = await fetch(url);
+      const response = await fetchWithAuth(url);
       if (!response.ok) {
         throw new Error('Failed to fetch properties');
       }
@@ -101,7 +102,7 @@ export default function AdminPropertyList() {
 
   const handleForceStatus = async (propertyId, newStatus) => {
     try {
-      const response = await fetch(
+      const response = await fetchWithAuth(
         `${API_BASE_URL}/properties/${propertyId}/force-status`,
         {
           method: 'PUT',

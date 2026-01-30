@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { fetchWithAuth } from '../../utils/api/fetchWithAuth';
 
 export default function SellerEnquiriesPage() {
   const [enquiries, setEnquiries] = useState([]);
@@ -31,7 +32,7 @@ export default function SellerEnquiriesPage() {
       }
 
       try {
-        const res = await fetch('http://localhost:8080/api/enquiries');
+        const res = await fetchWithAuth('http://localhost:8080/api/enquiries');
         if (!res.ok) throw new Error('Failed to fetch enquiries');
         const data = await res.json();
 
