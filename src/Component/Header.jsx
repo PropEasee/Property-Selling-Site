@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     try {
@@ -26,12 +27,10 @@ export default function Header() {
 
   const handleAuthButton = () => {
     if (userRole) {
-      // logout
       localStorage.removeItem('user');
       setUserRole(null);
       navigate('/');
     } else {
-      // go to login
       navigate('/');
     }
   };
@@ -40,95 +39,91 @@ export default function Header() {
     <>
       <style>{`
         .header {
-          background: white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .logo-circle {
-          width: 32px;
-          height: 32px;
-          background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
-          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(15px); /* Increased blur effect */
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          padding: 0.5rem 1rem;
           display: flex;
           align-items: center;
-          justify-content: center;
-          margin-right: 8px;
-        }
-
-        .logo-circle-inner {
-          width: 24px;
-          height: 24px;
-          border: 2px solid white;
-          border-radius: 50%;
-        }
-
-        .logo-text {
-          font-size: 1.25rem;
-          font-weight: 600;
-          color: #111827;
-          margin: 0;
-        }
-          .logoimg{
-            margin-right: 5px;
-            
-            }
-
-        .navbar {
-          padding: 1rem 0;
-        }
-
-        .navbar-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 1rem;
-          display: flex;
           justify-content: space-between;
-          align-items: center;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
         }
 
-        .navbar-brand {
+        .logo-container {
           display: flex;
           align-items: center;
-          text-decoration: none;
+          gap: 0.5rem;
+          padding-left: 1rem;
+        }
+
+        .logoimg {
+          height: 40px;
+        }
+
+        .website-name {
+          font-family: 'Poppins', sans-serif;
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: #3b82f6;
+        }
+
+        .role-badge {
+          font-size: 0.75rem;
+          color: #ffffff;
+          background: #244b8a;
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.9rem;
+          text-transform: uppercase;
         }
 
         .navbar-menu {
           display: flex;
           align-items: center;
-          gap: 2rem;
+          gap: 1.5rem;
           list-style: none;
           margin: 0;
           padding: 0;
         }
 
         .nav-link {
-          color: #374151;
+          color: #0b121d;
           font-weight: 500;
-          font-size: 0.875rem;
-          letter-spacing: 0.5px;
+          font-size: 1rem;
           text-decoration: none;
-          transition: color 0.3s ease;
+          padding: 0.5rem 1rem;
+          border-radius: 20px; /* Rounded box for links */
+          transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
         }
 
         .nav-link:hover {
-          color: #111827;
+          background-color: #113c83;
+          color: #ffffff;
+          transform: scale(1.1);
+        }
+
+        .nav-link.active {
+          background-color: #113c83; /* Highlight selected option */
+          color: #ffffff;
         }
 
         .login-btn {
           padding: 0.5rem 1.5rem;
-          border: 2px solid #22d3ee;
-          color: #06b6d4;
-          background: white;
+          border: 2px solid #3b82f6;
+          color: #3b82f6;
+          background: transparent;
           border-radius: 50px;
           font-weight: 500;
           font-size: 0.875rem;
-          letter-spacing: 0.5px;
           cursor: pointer;
-          transition: background-color 0.3s ease;
+          transition: all 0.3s ease;
         }
 
         .login-btn:hover {
-          background-color: #ecfeff;
+          background-color: #3b82f6;
+          color: #ffffff;
+          transform: scale(1.1);
         }
 
         .navbar-toggler {
@@ -142,7 +137,7 @@ export default function Header() {
         .hamburger {
           width: 24px;
           height: 2px;
-          background-color: #374151;
+          background-color: #3b82f6;
           position: relative;
           transition: all 0.3s ease;
         }
@@ -153,7 +148,7 @@ export default function Header() {
           position: absolute;
           width: 24px;
           height: 2px;
-          background-color: #374151;
+          background-color: #3b82f6;
           transition: all 0.3s ease;
         }
 
@@ -189,11 +184,12 @@ export default function Header() {
             top: 100%;
             left: 0;
             right: 0;
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px); /* Increased blur effect */
             flex-direction: column;
             align-items: flex-start;
             padding: 1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             display: none;
           }
 
@@ -214,60 +210,144 @@ export default function Header() {
           .navbar {
             position: relative;
           }
-            
         }
       `}</style>
 
       <nav className="navbar header">
-        <div className="navbar-container">
-          <a href="#" className="navbar-brand">
-            <img src="/logo2.png" alt="img" height={35} className='logoimg' />
-            <span className="logo-text">PropEase</span>
-          </a>
-
-          <button className="navbar-toggler" onClick={toggleMenu}>
-            <div className={`hamburger ${isOpen ? 'active' : ''}`}></div>
-          </button>
-
-          <ul className={`navbar-menu ${isOpen ? 'active' : ''}`}>
-            
-
-            {/* Role-specific links */}
-            {userRole === 'ADMIN' && (
-              <>
-                <li><a href="/AdminDashboard" className="nav-link">ADMIN DASHBOARD</a></li>
-                <li><a href="/AdminPropertyList" className="nav-link">MANAGE PROPERTIES</a></li>
-                <li><a href="/AdminUsersList" className="nav-link">USERS</a></li>
-                <li><a href="/AdminProfile" className="nav-link">PROFILE</a></li>
-              </>
-            )}
-
-            {userRole === 'SELLER' && (
-              <>
-                <li><a href="/SellerDashboard" className="nav-link">SELLER DASHBOARD</a></li>
-                <li><a href="/SellerPropertiesList" className="nav-link">MY PROPERTIES</a></li>
-                <li><a href="/AddProperty" className="nav-link">ADD PROPERTY</a></li>
-                <li><a href="/AdminProfile" className="nav-link">PROFILE</a></li>
-              </>
-            )}
-
-            {(!userRole || userRole === 'BUYER') && (
-              <>
-                <li><a href="home" className="nav-link">HOME</a></li>
-                <li><a href="PropertyListing" className="nav-link">PROPERTIES</a></li>
-                <li><a href="/BuyerDashboard" className="nav-link">DASHBOARD</a></li>
-                <li><a href="/ContactUs" className="nav-link">CONTACT US</a></li>
-                <li><a href="/BuyerProfile" className="nav-link">PROFILE</a></li>
-              </>
-            )}
-
-            <li>
-              <button className="login-btn" onClick={handleAuthButton}>
-                {userRole ? 'LOG OUT' : 'LOG IN'}
-              </button>
-            </li>
-          </ul>
+        <div className="logo-container">
+          <img src="/logo2.png" alt="Logo" className="logoimg" />
+          <span className="website-name">PropEase</span>
+          {userRole && <span className="role-badge">{userRole}</span>}
         </div>
+
+        <button className="navbar-toggler" onClick={toggleMenu}>
+          <div className={`hamburger ${isOpen ? 'active' : ''}`}></div>
+        </button>
+
+        <ul className={`navbar-menu ${isOpen ? 'active' : ''}`}>
+          {userRole === 'ADMIN' && (
+            <>
+              <li>
+                <a
+                  href="/AdminDashboard"
+                  className={`nav-link ${location.pathname === '/AdminDashboard' ? 'active' : ''}`}
+                >
+                  Admin Dashboard
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/AdminPropertyList"
+                  className={`nav-link ${location.pathname === '/AdminPropertyList' ? 'active' : ''}`}
+                >
+                  Manage Properties
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/AdminUsersList"
+                  className={`nav-link ${location.pathname === '/AdminUsersList' ? 'active' : ''}`}
+                >
+                  Users
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/AdminProfile"
+                  className={`nav-link ${location.pathname === '/AdminProfile' ? 'active' : ''}`}
+                >
+                  Profile
+                </a>
+              </li>
+            </>
+          )}
+
+          {userRole === 'SELLER' && (
+            <>
+              <li>
+                <a
+                  href="/SellerDashboard"
+                  className={`nav-link ${location.pathname === '/SellerDashboard' ? 'active' : ''}`}
+                >
+                  Seller Dashboard
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/SellerPropertiesList"
+                  className={`nav-link ${location.pathname === '/SellerPropertiesList' ? 'active' : ''}`}
+                >
+                  My Properties
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/AddProperty"
+                  className={`nav-link ${location.pathname === '/AddProperty' ? 'active' : ''}`}
+                >
+                  Add Property
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/AdminProfile"
+                  className={`nav-link ${location.pathname === '/AdminProfile' ? 'active' : ''}`}
+                >
+                  Profile
+                </a>
+              </li>
+            </>
+          )}
+
+          {(!userRole || userRole === 'BUYER') && (
+            <>
+              <li>
+                <a
+                  href="/home"
+                  className={`nav-link ${location.pathname === '/home' ? 'active' : ''}`}
+                >
+                  Home
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/PropertyListing"
+                  className={`nav-link ${location.pathname === '/PropertyListing' ? 'active' : ''}`}
+                >
+                  Properties
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/BuyerDashboard"
+                  className={`nav-link ${location.pathname === '/BuyerDashboard' ? 'active' : ''}`}
+                >
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/ContactUs"
+                  className={`nav-link ${location.pathname === '/ContactUs' ? 'active' : ''}`}
+                >
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/BuyerProfile"
+                  className={`nav-link ${location.pathname === '/BuyerProfile' ? 'active' : ''}`}
+                >
+                  Profile
+                </a>
+              </li>
+            </>
+          )}
+        </ul>
+
+        <button className="login-btn" onClick={handleAuthButton}>
+          {userRole ? 'Log Out' : 'Log In'}
+        </button>
       </nav>
     </>
   );
