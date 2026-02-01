@@ -561,10 +561,10 @@ export default function PropertyListingPage() {
                 
                 <div key={p.propertyId} className="property-card">
                   <Link
+                  // onClick={() => sendView(p.propertyId)}
                   to={`/PropertyDetailsPage/${p.propertyId}`}
                   key={p.propertyId}
                   className="property-card"
-                  onClick={() => sendView(p.propertyId)}
                   style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                   >
                   <div className="property-image-container">

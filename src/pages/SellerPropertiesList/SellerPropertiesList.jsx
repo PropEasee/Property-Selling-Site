@@ -494,7 +494,7 @@ export default function SellerPropertiesList() {
         </section>
 
         {/* Stats Cards */}
-        <section className="stats-cards">
+        {/* <section className="stats-cards">
           <div className="container">
             <div className="row g-4">
               <div className="col-md-6 col-lg-3">
@@ -535,7 +535,7 @@ export default function SellerPropertiesList() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Content Section */}
         <section className="content-section">
