@@ -7,6 +7,22 @@ export default function SellerPropertiesList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('All');
+  const [showEditPropertyModal, setShowEditPropertyModal] = useState(false);
+  const [editingPropertyId, setEditingPropertyId] = useState(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(null); // Track which property is being deleted
+  const [deleteError, setDeleteError] = useState('');
+  const [editFormData, setEditFormData] = useState({
+    title: '',
+    description: '',
+    price: '',
+    city: '',
+    state: '',
+    pincode: '',
+    propertyType: '',
+    status: ''
+  });
 
   const filteredProperties = filter === 'All' 
     ? properties 
@@ -27,59 +43,156 @@ export default function SellerPropertiesList() {
     window.location.href = `/PropertyDetailsPage/${id}`;
   };
 
-  const handleEdit = (id) => {
-    window.location.href = `/AddProperty?edit=${id}`;
+  // Handle Edit Property Click
+  const handleEditClick = async (propertyId) => {
+    setEditLoading(true);
+    setEditError('');
+    try {
+      const response = await fetchWithAuth(`http://localhost:8080/api/properties/${propertyId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch property details');
+      }
+      const propertyData = await response.json();
+
+      setEditFormData({
+        title: propertyData.title || '',
+        description: propertyData.description || '',
+        price: propertyData.price || '',
+        city: propertyData.city || '',
+        state: propertyData.state || '',
+        pincode: propertyData.pincode || '',
+        propertyType: propertyData.propertyType || '',
+        status: propertyData.status || ''
+      });
+      setEditingPropertyId(propertyId);
+      setShowEditPropertyModal(true);
+    } catch (error) {
+      setEditError(error.message || 'Error fetching property details');
+      console.error('Error fetching property:', error);
+    } finally {
+      setEditLoading(false);
+    }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this property?')) return;
+  // Handle Edit Form Input Change
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle Edit Form Submit
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingPropertyId) return;
+
+    setEditLoading(true);
+    setEditError('');
     try {
-      const res = await fetchWithAuth(`http://localhost:8080/api/properties/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
-      setProperties(prev => prev.filter(p => p.id !== id));
-    } catch (e) {
-      alert(e.message || 'Failed to delete');
+      const response = await fetchWithAuth(`http://localhost:8080/api/properties/${editingPropertyId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editFormData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update property');
+      }
+
+      // Refresh the properties list
+      await loadProperties();
+      setShowEditPropertyModal(false);
+      alert('Property updated successfully!');
+    } catch (error) {
+      setEditError(error.message || 'Error updating property');
+      console.error('Error updating property:', error);
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  // Handle Delete Property
+  const handleDelete = async (propertyId, propertyTitle) => {
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${propertyTitle}"? This action cannot be undone.`
+    );
+    
+    if (!confirmed) return;
+
+    setDeleteLoading(propertyId);
+    setDeleteError('');
+    
+    try {
+      const response = await fetchWithAuth(
+        `http://localhost:8080/api/propert/${propertyId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to delete property');
+      }
+
+      // Remove property from the list
+      setProperties(prev => prev.filter(p => p.id !== propertyId));
+      alert('Property deleted successfully!');
+    } catch (error) {
+      setDeleteError(error.message || 'Error deleting property');
+      alert(error.message || 'Failed to delete property');
+      console.error('Error deleting property:', error);
+    } finally {
+      setDeleteLoading(null);
+    }
+  };
+
+  const loadProperties = async () => {
+    setLoading(true);
+    setError('');
+    const sellerId = getSellerIdFromStorage();
+    if (!sellerId) {
+      setError('Seller ID not found. Please login as a seller.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetchWithAuth(`http://localhost:8080/api/properties/seller/${sellerId}`);
+      if (!res.ok) throw new Error(`Failed to load properties: ${res.status}`);
+      const data = await res.json();
+
+      const mapped = (Array.isArray(data) ? data : []).map(item => ({
+        id: item.propertyId,
+        title: item.title,
+        address: `${item.city ?? ''}${item.city && item.state ? ', ' : ''}${item.state ?? ''}${item.pincode ? ' - ' + item.pincode : ''}`,
+        price: `₹${Number(item.price ?? 0).toLocaleString('en-IN')}`,
+        bedrooms: item.bedrooms ?? '-',
+        bathrooms: item.bathrooms ?? '-',
+        sqft: item.sqft ?? '-',
+        status: item.status === 'AVAILABLE' ? 'Active' : item.status === 'SOLD' ? 'Sold' : 'Pending',
+        views: item.views ?? 0,
+        inquiries: item.inquiries ?? 0,
+        image: item.imageUrl || 'https://via.placeholder.com/800x600?text=No+Image'
+      }));
+
+      setProperties(mapped);
+    } catch (err) {
+      setError(err?.message || 'Error loading properties');
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setError('');
-      const sellerId = getSellerIdFromStorage();
-      if (!sellerId) {
-        setError('Seller ID not found. Please login as a seller.');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await fetchWithAuth(`http://localhost:8080/api/properties/seller/${sellerId}`);
-        if (!res.ok) throw new Error(`Failed to load properties: ${res.status}`);
-        const data = await res.json();
-
-        const mapped = (Array.isArray(data) ? data : []).map(item => ({
-          id: item.propertyId,
-          title: item.title,
-          address: `${item.city ?? ''}${item.city && item.state ? ', ' : ''}${item.state ?? ''}${item.pincode ? ' - ' + item.pincode : ''}`,
-          price: `₹${Number(item.price ?? 0).toLocaleString('en-IN')}`,
-          bedrooms: item.bedrooms ?? '-',
-          bathrooms: item.bathrooms ?? '-',
-          sqft: item.sqft ?? '-',
-          status: item.status === 'AVAILABLE' ? 'Active' : item.status === 'SOLD' ? 'Sold' : 'Pending',
-          views: item.views ?? 0,
-          inquiries: item.inquiries ?? 0,
-          image: item.imageUrl || 'https://via.placeholder.com/800x600?text=No+Image'
-        }));
-
-        setProperties(mapped);
-      } catch (err) {
-        setError(err?.message || 'Error loading properties');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    loadProperties();
   }, []);
 
   return (
@@ -186,7 +299,7 @@ export default function SellerPropertiesList() {
                             <span>{property.sqft} sqft</span>
                           </div>
                         </div>
-                        <div className={styles.propertyStats}>
+                        {/* <div className={styles.propertyStats}>
                           <div className={styles.statItem}>
                             <div className={styles.statNumber}>{property.views}</div>
                             <div className={styles.statLabel}>Views</div>
@@ -195,21 +308,34 @@ export default function SellerPropertiesList() {
                             <div className={styles.statNumber}>{property.inquiries}</div>
                             <div className={styles.statLabel}>Inquiries</div>
                           </div>
-                        </div>
+                        </div> */}
 
                         {/* Action buttons */}
                         <div className={styles.actionButtons}>
-                          <button className={`${styles.actionBtn} ${styles.viewBtn}`} onClick={() => handleView(property.id)}>
+                          <button 
+                            className={`${styles.actionBtn} ${styles.viewBtn}`} 
+                            onClick={() => handleView(property.id)}
+                            disabled={deleteLoading === property.id}
+                          >
                             <i className="fas fa-eye"></i>
                             View
                           </button>
-                          <button className={`${styles.actionBtn} ${styles.editBtn}`} onClick={() => handleEdit(property.id)}>
+                          <button 
+                            className={`${styles.actionBtn} ${styles.editBtn}`} 
+                            onClick={() => handleEditClick(property.id)}
+                            disabled={deleteLoading === property.id}
+                          >
                             <i className="fas fa-edit"></i>
                             Edit
                           </button>
-                          <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(property.id)}>
-                            <i className="fas fa-trash"></i>
-                            Delete
+                          <button 
+                            className={`${styles.actionBtn} ${styles.deleteBtn}`} 
+                            onClick={() => handleDelete(property.id, property.title)}
+                            disabled={deleteLoading === property.id}
+                            title={deleteLoading === property.id ? 'Deleting...' : 'Delete Property'}
+                          >
+                            <i className={`fas ${deleteLoading === property.id ? 'fa-spinner fa-spin' : 'fa-trash'}`}></i>
+                            {deleteLoading === property.id ? 'Deleting...' : 'Delete'}
                           </button>
                         </div>
                       </div>
@@ -224,6 +350,147 @@ export default function SellerPropertiesList() {
             )}
           </div>
         </section>
+      </div>
+
+      {/* Edit Property Modal */}
+      <div className={`${styles.modalOverlay} ${showEditPropertyModal ? styles.active : ''}`}>
+        <div className={styles.modal}>
+          <div className={styles.modalHeader}>
+            <h2 className={styles.modalTitle}>Edit Property</h2>
+            <button className={styles.modalClose} onClick={() => setShowEditPropertyModal(false)}>×</button>
+          </div>
+
+          {editError && (
+            <div style={{ color: '#dc2626', padding: '1rem', background: '#fee2e2', borderRadius: '8px', marginBottom: '1rem' }}>
+              {editError}
+            </div>
+          )}
+
+          <form onSubmit={handleEditSubmit}>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Property Title</label>
+              <input 
+                type="text" 
+                name="title"
+                className={styles.formInput} 
+                placeholder="Enter property title"
+                value={editFormData.title}
+                onChange={handleEditFormChange}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Description</label>
+              <input 
+                type="text" 
+                name="description"
+                className={styles.formInput} 
+                placeholder="Enter property description"
+                value={editFormData.description}
+                onChange={handleEditFormChange}
+                style={{ minHeight: '80px' }}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Price</label>
+              <input 
+                type="number" 
+                name="price"
+                className={styles.formInput} 
+                placeholder="Enter property price"
+                value={editFormData.price}
+                onChange={handleEditFormChange}
+                required
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>City</label>
+                <input 
+                  type="text" 
+                  name="city"
+                  className={styles.formInput} 
+                  placeholder="Enter city"
+                  value={editFormData.city}
+                  onChange={handleEditFormChange}
+                  required
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>State</label>
+                <input 
+                  type="text" 
+                  name="state"
+                  className={styles.formInput} 
+                  placeholder="Enter state"
+                  value={editFormData.state}
+                  onChange={handleEditFormChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Pincode</label>
+                <input 
+                  type="text" 
+                  name="pincode"
+                  className={styles.formInput} 
+                  placeholder="Enter pincode"
+                  value={editFormData.pincode}
+                  onChange={handleEditFormChange}
+                  required
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Property Type</label>
+                <select 
+                  name="propertyType"
+                  className={styles.formInput}
+                  value={editFormData.propertyType}
+                  onChange={handleEditFormChange}
+                  required
+                >
+                  <option value="">Select property type</option>
+                  <option value="APARTMENT">Apartment</option>
+                  <option value="VILLA">Villa</option>
+                  <option value="HOUSE">House</option>
+                  <option value="COMMERCIAL">Commercial</option>
+                  <option value="LAND">Land</option>
+                </select>
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Status</label>
+              <select 
+                name="status"
+                className={styles.formInput}
+                value={editFormData.status}
+                onChange={handleEditFormChange}
+                required
+              >
+                <option value="">Select status</option>
+                <option value="AVAILABLE">Available</option>
+                <option value="SOLD">Sold</option>
+                <option value="PENDING">Pending</option>
+              </select>
+            </div>
+
+            <div className={styles.modalButtons}>
+              <button type="submit" className={styles.buttonPrimary} disabled={editLoading}>
+                {editLoading ? 'Updating...' : 'Update Property'}
+              </button>
+              <button type="button" className={styles.buttonSecondary} onClick={() => setShowEditPropertyModal(false)}>Cancel</button>
+            </div>
+          </form>
+        </div>
       </div>
     </>
   );
