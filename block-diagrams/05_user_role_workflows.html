@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropEase - User Role Workflows</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2563eb;
+            margin-bottom: 30px;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+        }
+        .box {
+            fill: #fff;
+            stroke: #2563eb;
+            stroke-width: 2;
+            rx: 8;
+        }
+        .buyer { fill: #dbeafe; stroke: #2563eb; }
+        .seller { fill: #fef3c7; stroke: #f59e0b; }
+        .admin { fill: #fee2e2; stroke: #dc2626; }
+        .action { fill: #d1fae5; stroke: #059669; }
+        .arrow { stroke: #6b7280; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+        text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; }
+        .title { font-weight: bold; font-size: 14px; }
+        .icon { font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👥 PropEase - Complete User Role Workflows</h1>
+        <svg viewBox="0 0 1800 2000" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#6b7280" />
+                </marker>
+            </defs>
+            
+            <!-- Title -->
+            <text x="900" y="30" text-anchor="middle" style="font-size: 24px; font-weight: bold; fill: #1e40af;">
+                THREE USER ROLES - COMPLETE WORKFLOWS
+            </text>
+            
+            <!-- ========== BUYER WORKFLOW ========== -->
+            <text x="50" y="80" style="font-size: 20px; font-weight: bold; fill: #2563eb;">
+                🛒 BUYER WORKFLOW
+            </text>
+            
+            <!-- Login -->
+            <rect x="50" y="100" width="200" height="60" class="box buyer"/>
+            <text x="150" y="125" text-anchor="middle" class="title">Login as BUYER</text>
+            <text x="150" y="145" text-anchor="middle" style="font-size: 11px;">email + password</text>
+            
+            <!-- Arrow -->
+            <line x1="150" y1="165" x2="150" y2="200" class="arrow"/>
+            
+            <!-- Homepage -->
+            <rect x="50" y="210" width="200" height="120" class="box buyer"/>
+            <text x="150" y="235" text-anchor="middle" class="title">Homepage</text>
+            <text x="70" y="255" style="font-size: 11px;">• Hero Section</text>
+            <text x="70" y="270" style="font-size: 11px;">• Featured Cities</text>
+            <text x="70" y="285" style="font-size: 11px;">• Latest Properties</text>
+            <text x="70" y="300" style="font-size: 11px;">• Statistics</text>
+            <text x="70" y="315" style="font-size: 11px;">• Call-to-Action</text>
+            
+            <!-- Arrow -->
+            <line x1="150" y1="335" x2="150" y2="370" class="arrow"/>
+            
+            <!-- Browse Properties -->
+            <rect x="50" y="380" width="200" height="140" class="box buyer"/>
+            <text x="150" y="405" text-anchor="middle" class="title">Browse Properties</text>
+            <text x="70" y="430" style="font-size: 11px;">🔍 Search by keyword</text>
+            <text x="70" y="448" style="font-size: 11px;">🏠 Filter by type</text>
+            <text x="70" y="466" style="font-size: 11px;">💰 Price range</text>
+            <text x="70" y="484" style="font-size: 11px;">📍 City filter</text>
+            <text x="70" y="502" style="font-size: 11px;">⬆️ Sort options</text>
+            
+            <!-- Arrow -->
+            <line x1="150" y1="525" x2="150" y2="560" class="arrow"/>
+            <text x="170" y="545" style="font-size: 11px; fill: #6b7280;">Click Property</text>
+            
+            <!-- Property Details -->
+            <rect x="50" y="570" width="200" height="180" class="box buyer"/>
+            <text x="150" y="595" text-anchor="middle" class="title">Property Details</text>
+            <text x="70" y="620" style="font-size: 11px;">📸 Image Gallery</text>
+            <text x="70" y="638" style="font-size: 11px;">💵 Price & Location</text>
+            <text x="70" y="656" style="font-size: 11px;">📝 Description</text>
+            <text x="70" y="674" style="font-size: 11px;">✨ Features & Amenities</text>
+            <text x="70" y="692" style="font-size: 11px;">👤 Seller Info</text>
+            <text x="70" y="710" style="font-size: 11px;">📊 View Count</text>
+            <text x="70" y="735" style="font-size: 10px; fill: #dc2626; font-weight: bold;">
+                POST /api/properties/view
+            </text>
+            
+            <!-- Actions -->
+            <rect x="50" y="770" width="90" height="60" class="box action"/>
+            <text x="95" y="795" text-anchor="middle" class="title">❤️ Save</text>
+            <text x="95" y="815" text-anchor="middle" style="font-size: 10px;">POST /api/</text>
+            <text x="95" y="827" text-anchor="middle" style="font-size: 10px;">property-likes</text>
+            
+            <rect x="160" y="770" width="90" height="60" class="box action"/>
+            <text x="205" y="795" text-anchor="middle" class="title">✉️ Enquire</text>
+            <text x="205" y="815" text-anchor="middle" style="font-size: 10px;">POST /api/</text>
+            <text x="205" y="827" text-anchor="middle" style="font-size: 10px;">enquiries</text>
+            
+            <!-- Arrow -->
+            <line x1="150" y1="835" x2="150" y2="870" class="arrow"/>
+            
+            <!-- Buyer Dashboard -->
+            <rect x="50" y="880" width="200" height="140" class="box buyer"/>
+            <text x="150" y="905" text-anchor="middle" class="title">Buyer Dashboard</text>
+            <text x="70" y="930" style="font-size: 11px;">📋 Saved Properties</text>
+            <text x="70" y="948" style="font-size: 11px;">📧 Enquiry History</text>
+            <text x="70" y="966" style="font-size: 11px;">🎯 Recommendations</text>
+            <text x="70" y="984" style="font-size: 11px;">🔍 Search History</text>
+            <text x="70" y="1002" style="font-size: 11px;">⚙️ Profile Settings</text>
+            
+            
+            <!-- ========== SELLER WORKFLOW ========== -->
+            <text x="650" y="80" style="font-size: 20px; font-weight: bold; fill: #f59e0b;">
+                🏢 SELLER WORKFLOW
+            </text>
+            
+            <!-- Login -->
+            <rect x="650" y="100" width="200" height="60" class="box seller"/>
+            <text x="750" y="125" text-anchor="middle" class="title">Login as SELLER</text>
+            <text x="750" y="145" text-anchor="middle" style="font-size: 11px;">JWT Authentication</text>
+            
+            <!-- Arrow -->
+            <line x1="750" y1="165" x2="750" y2="200" class="arrow"/>
+            
+            <!-- Seller Dashboard -->
+            <rect x="650" y="210" width="200" height="160" class="box seller"/>
+            <text x="750" y="235" text-anchor="middle" class="title">Seller Dashboard</text>
+            <text x="670" y="260" style="font-size: 11px;">📊 Total Properties</text>
+            <text x="670" y="278" style="font-size: 11px;">👁️ Total Views</text>
+            <text x="670" y="296" style="font-size: 11px;">💬 Total Enquiries</text>
+            <text x="670" y="314" style="font-size: 11px;">❤️ Total Likes</text>
+            <text x="670" y="332" style="font-size: 11px;">📈 Recent Activity</text>
+            <text x="670" y="350" style="font-size: 11px;">🔔 Notifications</text>
+            
+            <!-- Arrow -->
+            <line x1="750" y1="375" x2="750" y2="410" class="arrow"/>
+            
+            <!-- Add Property -->
+            <rect x="650" y="420" width="200" height="220" class="box seller"/>
+            <text x="750" y="445" text-anchor="middle" class="title">➕ Add New Property</text>
+            <text x="670" y="475" style="font-size: 11px;">Form Fields:</text>
+            <text x="670" y="493" style="font-size: 11px;">• Title & Description</text>
+            <text x="670" y="511" style="font-size: 11px;">• Price (₹)</text>
+            <text x="670" y="529" style="font-size: 11px;">• Location (City, State, PIN)</text>
+            <text x="670" y="547" style="font-size: 11px;">• Property Type</text>
+            <text x="670" y="565" style="font-size: 11px;">• Status</text>
+            <text x="670" y="583" style="font-size: 11px;">• Amenities (multi-select)</text>
+            <text x="670" y="601" style="font-size: 11px;">• Upload Images (multiple)</text>
+            <text x="670" y="625" style="font-size: 10px; fill: #dc2626; font-weight: bold;">
+                POST /api/properties
+            </text>
+            
+            <!-- Arrow -->
+            <line x1="750" y1="645" x2="750" y2="680" class="arrow"/>
+            
+            <!-- My Properties -->
+            <rect x="650" y="690" width="200" height="160" class="box seller"/>
+            <text x="750" y="715" text-anchor="middle" class="title">My Properties</text>
+            <text x="670" y="745" style="font-size: 11px;">Actions per property:</text>
+            <text x="670" y="763" style="font-size: 11px;">👁️ View Details</text>
+            <text x="670" y="781" style="font-size: 11px;">✏️ Edit (PUT /api/properties/{id})</text>
+            <text x="670" y="799" style="font-size: 11px;">🗑️ Delete</text>
+            <text x="670" y="817" style="font-size: 11px;">📊 View Stats</text>
+            <text x="670" y="835" style="font-size: 11px;">🔄 Change Status</text>
+            
+            <!-- Arrow -->
+            <line x1="750" y1="855" x2="750" y2="890" class="arrow"/>
+            
+            <!-- Enquiries -->
+            <rect x="650" y="900" width="200" height="140" class="box seller"/>
+            <text x="750" y="925" text-anchor="middle" class="title">View Enquiries</text>
+            <text x="670" y="955" style="font-size: 11px;">Filter by Property:</text>
+            <text x="670" y="973" style="font-size: 11px;">• All Properties</text>
+            <text x="670" y="991" style="font-size: 11px;">• Specific Property</text>
+            <text x="670" y="1015" style="font-size: 11px;">Shows: Buyer name, email,</text>
+            <text x="670" y="1030" style="font-size: 11px;">message, date</text>
+            
+            
+            <!-- ========== ADMIN WORKFLOW ========== -->
+            <text x="1250" y="80" style="font-size: 20px; font-weight: bold; fill: #dc2626;">
+                👑 ADMIN WORKFLOW
+            </text>
+            
+            <!-- Login -->
+            <rect x="1250" y="100" width="200" height="60" class="box admin"/>
+            <text x="1350" y="125" text-anchor="middle" class="title">Login as ADMIN</text>
+            <text x="1350" y="145" text-anchor="middle" style="font-size: 11px;">Superuser Access</text>
+            
+            <!-- Arrow -->
+            <line x1="1350" y1="165" x2="1350" y2="200" class="arrow"/>
+            
+            <!-- Admin Dashboard -->
+            <rect x="1250" y="210" width="200" height="220" class="box admin"/>
+            <text x="1350" y="235" text-anchor="middle" class="title">Admin Dashboard</text>
+            <text x="1270" y="265" style="font-size: 11px; font-weight: bold;">System Statistics:</text>
+            <text x="1270" y="285" style="font-size: 11px;">👥 Total Admins: 5</text>
+            <text x="1270" y="303" style="font-size: 11px;">👔 Total Sellers: 42</text>
+            <text x="1270" y="321" style="font-size: 11px;">🛒 Total Buyers: 156</text>
+            <text x="1270" y="339" style="font-size: 11px;">🏠 Available: 320</text>
+            <text x="1270" y="357" style="font-size: 11px;">⏳ Pending: 45</text>
+            <text x="1270" y="375" style="font-size: 11px;">✅ Sold: 12</text>
+            <text x="1270" y="393" style="font-size: 11px;">💬 Enquiries: 1,203</text>
+            <text x="1270" y="415" style="font-size: 10px; fill: #dc2626; font-weight: bold;">
+                GET /api/admin/stats
+            </text>
+            
+            <!-- Arrow -->
+            <line x1="1350" y1="435" x2="1350" y2="470" class="arrow"/>
+            
+            <!-- Manage Properties -->
+            <rect x="1250" y="480" width="200" height="180" class="box admin"/>
+            <text x="1350" y="505" text-anchor="middle" class="title">Manage ALL Properties</text>
+            <text x="1270" y="535" style="font-size: 11px;">🌐 System-wide Access</text>
+            <text x="1270" y="553" style="font-size: 11px;">🔍 Search any property</text>
+            <text x="1270" y="571" style="font-size: 11px;">📝 Filter by status</text>
+            <text x="1270" y="595" style="font-size: 11px; font-weight: bold;">Admin Actions:</text>
+            <text x="1270" y="613" style="font-size: 11px;">✏️ Edit ANY property</text>
+            <text x="1270" y="631" style="font-size: 11px;">🗑️ Delete ANY property</text>
+            <text x="1270" y="649" style="font-size: 11px;">🔄 Force status change</text>
+            
+            <!-- Arrow -->
+            <line x1="1350" y1="665" x2="1350" y2="700" class="arrow"/>
+            
+            <!-- Manage Users -->
+            <rect x="1250" y="710" width="200" height="200" class="box admin"/>
+            <text x="1350" y="735" text-anchor="middle" class="title">Manage Users</text>
+            <text x="1270" y="765" style="font-size: 11px;">Filter by Role:</text>
+            <text x="1270" y="783" style="font-size: 11px;">• ALL</text>
+            <text x="1270" y="801" style="font-size: 11px;">• ADMIN</text>
+            <text x="1270" y="819" style="font-size: 11px;">• SELLER</text>
+            <text x="1270" y="837" style="font-size: 11px;">• BUYER</text>
+            <text x="1270" y="861" style="font-size: 11px; font-weight: bold;">User Actions:</text>
+            <text x="1270" y="879" style="font-size: 11px;">✏️ Edit user info</text>
+            <text x="1270" y="897" style="font-size: 11px;">🗑️ Delete user</text>
+            
+            <!-- Arrow -->
+            <line x1="1350" y1="915" x2="1350" y2="950" class="arrow"/>
+            
+            <!-- Platform Control -->
+            <rect x="1250" y="960" width="200" height="120" class="box admin"/>
+            <text x="1350" y="985" text-anchor="middle" class="title">Platform Control</text>
+            <text x="1270" y="1010" style="font-size: 11px;">📊 Analytics Reports</text>
+            <text x="1270" y="1028" style="font-size: 11px;">🔍 Content Moderation</text>
+            <text x="1270" y="1046" style="font-size: 11px;">⚙️ System Settings</text>
+            <text x="1270" y="1064" style="font-size: 11px;">📈 Performance Metrics</text>
+            
+            
+            <!-- ========== API ENDPOINTS REFERENCE ========== -->
+            <rect x="50" y="1100" width="1700" height="380" class="box" style="fill: #f9fafb; stroke: #6b7280;"/>
+            <text x="900" y="1135" text-anchor="middle" style="font-size: 20px; font-weight: bold; fill: #1e40af;">
+                KEY API ENDPOINTS BY ROLE
+            </text>
+            
+            <!-- Buyer APIs -->
+            <text x="70" y="1175" style="font-size: 14px; font-weight: bold; fill: #2563eb;">BUYER APIs:</text>
+            <text x="70" y="1200" style="font-size: 11px;">• GET /api/properties - Browse all properties</text>
+            <text x="70" y="1218" style="font-size: 11px;">• GET /api/properties/{id} - View property details</text>
+            <text x="70" y="1236" style="font-size: 11px;">• POST /api/properties/view - Track view (analytics)</text>
+            <text x="70" y="1254" style="font-size: 11px;">• POST /api/property-likes/{buyerId}/{propertyId} - Save property</text>
+            <text x="70" y="1272" style="font-size: 11px;">• GET /api/property-likes/buyer/{buyerId} - Get saved properties</text>
+            <text x="70" y="1290" style="font-size: 11px;">• POST /api/enquiries - Send enquiry to seller</text>
+            <text x="70" y="1308" style="font-size: 11px;">• GET /api/enquiries/buyer/{buyerId} - View my enquiries</text>
+            
+            <!-- Seller APIs -->
+            <text x="70" y="1348" style="font-size: 14px; font-weight: bold; fill: #f59e0b;">SELLER APIs:</text>
+            <text x="70" y="1373" style="font-size: 11px;">• POST /api/properties - Create new property</text>
+            <text x="70" y="1391" style="font-size: 11px;">• POST /api/properties/{id}/images - Upload property images (FormData)</text>
+            <text x="70" y="1409" style="font-size: 11px;">• GET /api/properties/seller/{sellerId} - Get my properties</text>
+            <text x="70" y="1427" style="font-size: 11px;">• PUT /api/properties/{id} - Update property</text>
+            <text x="70" y="1445" style="font-size: 11px;">• DELETE /api/properties/{id} - Delete property</text>
+            
+            <!-- Admin APIs -->
+            <text x="900" y="1175" style="font-size: 14px; font-weight: bold; fill: #dc2626;">ADMIN APIs:</text>
+            <text x="900" y="1200" style="font-size: 11px;">• GET /api/admin/stats - System statistics dashboard</text>
+            <text x="900" y="1218" style="font-size: 11px;">• GET /api/admin/properties?search=keyword - Search all properties</text>
+            <text x="900" y="1236" style="font-size: 11px;">• PUT /api/admin/properties/{id}/force-status - Force status change</text>
+            <text x="900" y="1254" style="font-size: 11px;">• GET /api/admin/users?role=SELLER - Get users by role</text>
+            <text x="900" y="1272" style="font-size: 11px;">• PUT /api/admin/users/{id} - Update any user</text>
+            <text x="900" y="1290" style="font-size: 11px;">• DELETE /api/admin/users/{id} - Delete any user</text>
+            <text x="900" y="1308" style="font-size: 11px;">• GET /api/admin/properties/no-images - Get props without images</text>
+            
+            <!-- Shared/Common APIs -->
+            <text x="900" y="1348" style="font-size: 14px; font-weight: bold; fill: #059669;">SHARED/COMMON:</text>
+            <text x="900" y="1373" style="font-size: 11px;">• POST /api/auth/register - User registration (all roles)</text>
+            <text x="900" y="1391" style="font-size: 11px;">• POST /api/auth/login - User login (returns JWT token)</text>
+            <text x="900" y="1409" style="font-size: 11px;">• GET /api/enquiries/property/{propertyId}/count - Count enquiries</text>
+            <text x="900" y="1427" style="font-size: 11px;">• GET /api/properties/sellers/{sellerId}/viewsCount - View analytics</text>
+            <text x="900" y="1445" style="font-size: 11px;">• GET /api/enquiries/seller/{sellerId}/total-count - Total enquiries for seller</text>
+            
+            
+            <!-- ========== PERMISSION MATRIX ========== -->
+            <rect x="50" y="1510" width="1700" height="250" class="box" style="fill: #fef3c7; stroke: #f59e0b;"/>
+            <text x="900" y="1545" text-anchor="middle" style="font-size: 20px; font-weight: bold; fill: #92400e;">
+                ROLE-BASED PERMISSIONS MATRIX
+            </text>
+            
+            <text x="70" y="1585" style="font-size: 13px; font-weight: bold;">Feature</text>
+            <text x="500" y="1585" style="font-size: 13px; font-weight: bold; fill: #2563eb;">BUYER</text>
+            <text x="700" y="1585" style="font-size: 13px; font-weight: bold; fill: #f59e0b;">SELLER</text>
+            <text x="900" y="1585" style="font-size: 13px; font-weight: bold; fill: #dc2626;">ADMIN</text>
+            
+            <line x1="70" y1="1595" x2="1730" y2="1595" stroke="#6b7280" stroke-width="1"/>
+            
+            <text x="70" y="1620" style="font-size: 12px;">Browse Properties</text>
+            <text x="520" y="1620" style="font-size: 16px; fill: #059669;">✓</text>
+            <text x="720" y="1620" style="font-size: 16px; fill: #059669;">✓</text>
+            <text x="920" y="1620" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="70" y="1645" style="font-size: 12px;">Save/Like Properties</text>
+            <text x="520" y="1645" style="font-size: 16px; fill: #059669;">✓</text>
+            <text x="720" y="1645" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="920" y="1645" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="70" y="1670" style="font-size: 12px;">Send Enquiries</text>
+            <text x="520" y="1670" style="font-size: 16px; fill: #059669;">✓</text>
+            <text x="720" y="1670" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="920" y="1670" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="70" y="1695" style="font-size: 12px;">Add Properties</text>
+            <text x="520" y="1695" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="720" y="1695" style="font-size: 16px; fill: #059669;">✓</text>
+            <text x="920" y="1695" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="70" y="1720" style="font-size: 12px;">Edit Own Properties</text>
+            <text x="520" y="1720" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="720" y="1720" style="font-size: 16px; fill: #059669;">✓</text>
+            <text x="920" y="1720" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="70" y="1745" style="font-size: 12px; font-weight: bold;">Edit ANY Property</text>
+            <text x="520" y="1745" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="720" y="1745" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="920" y="1745" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="900" y="1620" style="font-size: 12px;">Manage Users</text>
+            <text x="1120" y="1620" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1320" y="1620" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1520" y="1620" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="900" y="1645" style="font-size: 12px;">System Analytics</text>
+            <text x="1120" y="1645" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1320" y="1645" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1520" y="1645" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="900" y="1670" style="font-size: 12px;">View Own Enquiries</text>
+            <text x="1120" y="1670" style="font-size: 16px; fill: #059669;">✓</text>
+            <text x="1320" y="1670" style="font-size: 16px; fill: #059669;">✓</text>
+            <text x="1520" y="1670" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="900" y="1695" style="font-size: 12px; font-weight: bold;">View ALL Enquiries</text>
+            <text x="1120" y="1695" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1320" y="1695" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1520" y="1695" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="900" y="1720" style="font-size: 12px;">Force Status Change</text>
+            <text x="1120" y="1720" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1320" y="1720" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1520" y="1720" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            <text x="900" y="1745" style="font-size: 12px;">Content Moderation</text>
+            <text x="1120" y="1745" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1320" y="1745" style="font-size: 16px; fill: #dc2626;">✗</text>
+            <text x="1520" y="1745" style="font-size: 16px; fill: #059669;">✓</text>
+            
+            
+            <!-- Footer -->
+            <rect x="50" y="1790" width="1700" height="80" class="box" style="fill: #eff6ff; stroke: #2563eb;"/>
+            <text x="900" y="1820" text-anchor="middle" style="font-size: 16px; font-weight: bold; fill: #1e40af;">
+                🔐 All routes protected by JWT Authentication + @PreAuthorize Role Checks
+            </text>
+            <text x="900" y="1845" text-anchor="middle" style="font-size: 13px; fill: #6b7280;">
+                Token Expiration: 1 hour | Encryption: BCrypt (strength 10) | Images: Cloudinary CDN
+            </text>
+            <text x="900" y="1863" text-anchor="middle" style="font-size: 13px; fill: #6b7280;">
+                Database: MySQL 8.0 | ORM: JPA/Hibernate | Backend: Spring Boot 3.x | Frontend: React 19 + Vite
+            </text>
+        </svg>
+    </div>
+</body>
+</html>

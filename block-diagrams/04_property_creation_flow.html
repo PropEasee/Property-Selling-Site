@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropEase - Property Creation Flow</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2563eb;
+            margin-bottom: 30px;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+        }
+        .box {
+            fill: #fff;
+            stroke: #2563eb;
+            stroke-width: 2;
+            rx: 8;
+        }
+        .frontend { fill: #dbeafe; }
+        .backend { fill: #fef3c7; }
+        .database { fill: #d1fae5; }
+        .cloud { fill: #e0e7ff; }
+        .success { fill: #d1fae5; }
+        .arrow { stroke: #6b7280; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+        .arrow-thick { stroke: #dc2626; stroke-width: 4; fill: none; marker-end: url(#arrowhead-thick); }
+        text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; }
+        .title { font-weight: bold; font-size: 15px; }
+        .code { font-family: 'Courier New', monospace; font-size: 11px; fill: #374151; }
+        .step { font-size: 18px; font-weight: bold; fill: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 PropEase - Complete Property Creation Flow</h1>
+        <svg viewBox="0 0 1800 2200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#6b7280" />
+                </marker>
+                <marker id="arrowhead-thick" markerWidth="12" markerHeight="12" refX="10" refY="3" orient="auto">
+                    <polygon points="0 0, 12 3, 0 6" fill="#dc2626" />
+                </marker>
+            </defs>
+            
+            <!-- Title -->
+            <text x="900" y="30" text-anchor="middle" style="font-size: 24px; font-weight: bold; fill: #1e40af;">
+                SELLER CREATES PROPERTY - END-TO-END WORKFLOW
+            </text>
+            
+            <!-- Column Headers -->
+            <text x="300" y="80" text-anchor="middle" style="font-size: 16px; font-weight: bold; fill: #2563eb;">
+                FRONTEND (React)
+            </text>
+            <text x="900" y="80" text-anchor="middle" style="font-size: 16px; font-weight: bold; fill: #f59e0b;">
+                BACKEND (Spring Boot)
+            </text>
+            <text x="1500" y="80" text-anchor="middle" style="font-size: 16px; font-weight: bold; fill: #059669;">
+                DATABASE / CLOUD
+            </text>
+            
+            <!-- Step 1: Fill Form -->
+            <text x="50" y="140" class="step">STEP 1: Fill Form</text>
+            
+            <rect x="50" y="160" width="500" height="250" class="box frontend"/>
+            <text x="300" y="185" text-anchor="middle" class="title">AddProperty Component</text>
+            <text x="70" y="215" class="code">const [formData, setFormData] = useState({</text>
+            <text x="90" y="235" class="code">title: "Luxury Villa in Mumbai",</text>
+            <text x="90" y="252" class="code">description: "4BHK luxury villa...",</text>
+            <text x="90" y="269" class="code">price: 50000000,</text>
+            <text x="90" y="286" class="code">city: "Mumbai",</text>
+            <text x="90" y="303" class="code">state: "Maharashtra",</text>
+            <text x="90" y="320" class="code">pincode: "400001",</text>
+            <text x="90" y="337" class="code">propertyType: "VILLA",</text>
+            <text x="90" y="354" class="code">status: "AVAILABLE",</text>
+            <text x="90" y="371" class="code">sellerId: 15  // from localStorage</text>
+            <text x="70" y="388" class="code">});</text>
+            
+            <!-- Upload Images Preview -->
+            <rect x="50" y="430" width="500" height="140" class="box frontend"/>
+            <text x="300" y="455" text-anchor="middle" class="title">Image Upload & Preview</text>
+            <text x="70" y="485" class="code">const [images, setImages] = useState([]);</text>
+            <text x="70" y="502" class="code">// User selects: villa1.jpg, villa2.jpg, villa3.jpg</text>
+            <text x="70" y="530" style="font-size: 11px; fill: #6b7280;">
+                ✓ Image previews shown using FileReader
+            </text>
+            <text x="70" y="550" style="font-size: 11px; fill: #6b7280;">
+                ✓ Base64 data URLs for local preview
+            </text>
+            
+            <!-- Submit Button -->
+            <rect x="200" y="590" width="200" height="60" class="box" style="fill: #3b82f6;"/>
+            <text x="300" y="620" text-anchor="middle" style="fill: white; font-size: 16px; font-weight: bold;">
+                SUBMIT PROPERTY
+            </text>
+            
+            <!-- Arrow to Backend -->
+            <line x1="300" y1="655" x2="900" y2="725" class="arrow-thick"/>
+            <text x="550" y="680" style="font-size: 14px; fill: #dc2626; font-weight: bold;">
+                POST /api/properties
+            </text>
+            <text x="550" y="700" class="code" style="fill: #dc2626;">
+                Authorization: Bearer eyJhbGci...
+            </text>
+            
+            <!-- Step 2: Create Property -->
+            <text x="650" y="760" class="step">STEP 2: Create Property Record</text>
+            
+            <rect x="650" y="780" width="500" height="280" class="box backend"/>
+            <text x="900" y="805" text-anchor="middle" class="title">PropertyController.createProperty()</text>
+            <text x="670" y="835" class="code">@PostMapping("/api/properties")</text>
+            <text x="670" y="852" class="code">@PreAuthorize("hasRole('SELLER')")</text>
+            <text x="670" y="869" class="code">public ResponseEntity create(@RequestBody PropertyDto dto) {</text>
+            <text x="690" y="895" style="font-size: 12px; font-weight: bold;">1. Validate Seller ID</text>
+            <text x="710" y="915" class="code">User seller = userRepository.findById(dto.getSellerId());</text>
+            
+            <text x="690" y="945" style="font-size: 12px; font-weight: bold;">2. Create Property Object</text>
+            <text x="710" y="965" class="code">Property property = new Property();</text>
+            <text x="710" y="982" class="code">property.setTitle(dto.getTitle());</text>
+            <text x="710" y="999" class="code">property.setPrice(dto.getPrice());</text>
+            <text x="710" y="1016" class="code">property.setSeller(seller);</text>
+            
+            <text x="690" y="1046" style="font-size: 12px; font-weight: bold;">3. Save to Database</text>
+            
+            <!-- Arrow to Database -->
+            <line x1="1150" y1="920" x2="1250" y2="920" class="arrow"/>
+            
+            <!-- Database Insert -->
+            <rect x="1250" y="780" width="500" height="200" class="box database"/>
+            <text x="1500" y="805" text-anchor="middle" class="title">MySQL Database</text>
+            <text x="1270" y="840" class="code" style="fill: #059669;">INSERT INTO properties (</text>
+            <text x="1290" y="860" class="code" style="fill: #059669;">title, description, price,</text>
+            <text x="1290" y="877" class="code" style="fill: #059669;">city, state, pincode,</text>
+            <text x="1290" y="894" class="code" style="fill: #059669;">property_type, status,</text>
+            <text x="1290" y="911" class="code" style="fill: #059669;">seller_id, created_at</text>
+            <text x="1270" y="928" class="code" style="fill: #059669;">) VALUES (...);</text>
+            
+            <text x="1270" y="960" style="font-size: 12px; font-weight: bold; fill: #059669;">
+                ✓ Auto-generate property_id = 101
+            </text>
+            
+            <!-- Response back -->
+            <line x1="900" y1="1065" x2="900" y2="1130" class="arrow"/>
+            
+            <rect x="650" y="1140" width="500" height="100" class="box success"/>
+            <text x="900" y="1165" text-anchor="middle" class="title">Response: Property Created</text>
+            <text x="670" y="1195" class="code">{</text>
+            <text x="690" y="1212" class="code">"propertyId": 101,</text>
+            <text x="690" y="1229" class="code">"title": "Luxury Villa in Mumbai", ...</text>
+            
+            <!-- Extract Property ID -->
+            <line x1="650" y1="1190" x2="300" y2="1190" class="arrow"/>
+            
+            <rect x="50" y="1150" width="500" height="80" class="box frontend"/>
+            <text x="300" y="1175" text-anchor="middle" class="title">Extract Property ID</text>
+            <text x="70" y="1205" class="code">const propertyId = response.propertyId;  // 101</text>
+            
+            <!-- Step 3: Upload Images -->
+            <text x="50" y="1290" class="step">STEP 3: Upload Images to Cloud</text>
+            
+            <rect x="50" y="1310" width="500" height="180" class="box frontend"/>
+            <text x="300" y="1335" text-anchor="middle" class="title">Upload Images via FormData</text>
+            <text x="70" y="1365" class="code">const formData = new FormData();</text>
+            <text x="70" y="1382" class="code">images.forEach(file => {</text>
+            <text x="90" y="1399" class="code">formData.append('images', file);</text>
+            <text x="70" y="1416" class="code">});</text>
+            <text x="70" y="1445" class="code" style="fill: #dc2626;">
+                // POST to /api/properties/101/images
+            </text>
+            <text x="70" y="1470" style="font-size: 11px; fill: #6b7280;">
+                multipart/form-data: villa1.jpg, villa2.jpg, villa3.jpg
+            </text>
+            
+            <!-- Arrow to Backend -->
+            <line x1="300" y1="1495" x2="900" y2="1565" class="arrow-thick"/>
+            <text x="550" y="1520" style="font-size: 14px; fill: #dc2626; font-weight: bold;">
+                POST /api/properties/101/images
+            </text>
+            <text x="550" y="1540" class="code" style="fill: #dc2626;">
+                Content-Type: multipart/form-data
+            </text>
+            
+            <!-- Image Processing Backend -->
+            <rect x="650" y="1590" width="500" height="220" class="box backend"/>
+            <text x="900" y="1615" text-anchor="middle" class="title">PropertyImageService</text>
+            <text x="670" y="1645" class="code">public List&lt;String&gt; uploadAndSaveImages(</text>
+            <text x="690" y="1662" class="code">Long propertyId, List&lt;MultipartFile&gt; images) {</text>
+            
+            <text x="670" y="1692" style="font-size: 12px; font-weight: bold;">For each image file:</text>
+            <text x="690" y="1712" class="code">1. CloudinaryService.uploadImage(file)</text>
+            <text x="690" y="1729" class="code">2. Receive Cloudinary URL</text>
+            <text x="690" y="1746" class="code">3. Create PropertyImage entity</text>
+            <text x="690" y="1763" class="code">4. Save to database</text>
+            <text x="690" y="1790" class="code">return List.of(imageUrls);</text>
+            
+            <!-- Arrow to Cloudinary -->
+            <line x1="1150" y1="1700" x2="1250" y2="1700" class="arrow"/>
+            <text x="1180" y="1690" style="font-size: 12px; fill: #7c3aed; font-weight: bold;">
+                Upload to Cloud
+            </text>
+            
+            <!-- Cloudinary Cloud -->
+            <rect x="1250" y="1590" width="500" height="160" class="box cloud"/>
+            <text x="1500" y="1615" text-anchor="middle" class="title">Cloudinary CDN</text>
+            <text x="1270" y="1650" style="font-size: 12px; font-weight: bold; fill: #7c3aed;">
+                Image Upload Process:
+            </text>
+            <text x="1270" y="1675" class="code">✓ Receives file from backend</text>
+            <text x="1270" y="1692" class="code">✓ Stores in cloud storage</text>
+            <text x="1270" y="1709" class="code">✓ Generates secure URL</text>
+            <text x="1270" y="1735" style="font-size: 12px; font-weight: bold; fill: #059669;">
+                Returns: https://res.cloudinary.com/.../villa1.jpg
+            </text>
+            
+            <!-- Arrow to Database for image URLs -->
+            <line x1="1500" y1="1755" x2="1500" y2="1840" class="arrow"/>
+            
+            <!-- Save Image URLs to DB -->
+            <rect x="1250" y="1850" width="500" height="150" class="box database"/>
+            <text x="1500" y="1875" text-anchor="middle" class="title">MySQL - Save Image URLs</text>
+            <text x="1270" y="1905" class="code" style="fill: #059669;">INSERT INTO property_images</text>
+            <text x="1270" y="1922" class="code" style="fill: #059669;">(property_id, image_url) VALUES</text>
+            <text x="1270" y="1939" class="code" style="fill: #059669;">(101, 'https://...villa1.jpg'),</text>
+            <text x="1270" y="1956" class="code" style="fill: #059669;">(101, 'https://...villa2.jpg'),</text>
+            <text x="1270" y="1973" class="code" style="fill: #059669;">(101, 'https://...villa3.jpg');</text>
+            
+            <!-- Success Response -->
+            <line x1="900" y1="1815" x2="900" y2="1880" class="arrow"/>
+            
+            <rect x="650" y="1890" width="500" height="100" class="box success"/>
+            <text x="900" y="1915" text-anchor="middle" class="title">Response: Image URLs</text>
+            <text x="670" y="1945" class="code">[</text>
+            <text x="690" y="1962" class="code">"https://res.cloudinary.com/.../villa1.jpg",</text>
+            <text x="690" y="1979" class="code">"https://res.cloudinary.com/.../villa2.jpg", ...</text>
+            
+            <!-- Final Success -->
+            <line x1="650" y1="1940" x2="300" y2="1940" class="arrow"/>
+            
+            <rect x="50" y="1890" width="500" height="120" class="box" style="fill: #d1fae5;"/>
+            <text x="300" y="1920" text-anchor="middle" style="font-size: 18px; font-weight: bold; fill: #059669;">
+                ✓ PROPERTY CREATED SUCCESSFULLY!
+            </text>
+            <text x="70" y="1955" class="code">alert('Property published successfully!');</text>
+            <text x="70" y="1975" class="code">navigate('/SellerPropertiesList');</text>
+            <text x="70" y="1995" style="font-size: 11px; fill: #6b7280;">
+                User redirected to their properties list
+            </text>
+            
+            <!-- Summary Box -->
+            <rect x="50" y="2040" width="1700" height="140" class="box" style="fill: #f0f9ff;"/>
+            <text x="900" y="2070" text-anchor="middle" style="font-size: 18px; font-weight: bold; fill: #1e40af;">
+                WORKFLOW SUMMARY
+            </text>
+            <text x="70" y="2105" style="font-size: 13px;">
+                1️⃣ Seller fills form (title, price, location, type) + selects images
+            </text>
+            <text x="70" y="2128" style="font-size: 13px;">
+                2️⃣ Frontend sends property data (JSON) → Backend creates property record → MySQL generates property_id
+            </text>
+            <text x="70" y="2151" style="font-size: 13px;">
+                3️⃣ Frontend sends images (FormData) → Backend uploads to Cloudinary → Cloudinary returns URLs → URLs saved to MySQL
+            </text>
+            <text x="70" y="2174" style="font-size: 13px;">
+                4️⃣ Success! Property with images now visible to all buyers on the platform
+            </text>
+        </svg>
+    </div>
+</body>
+</html>

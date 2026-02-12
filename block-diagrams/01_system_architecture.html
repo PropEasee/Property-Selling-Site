@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropEase - System Architecture</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2563eb;
+            margin-bottom: 30px;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+        }
+        .layer {
+            fill: #fff;
+            stroke: #2563eb;
+            stroke-width: 2;
+            rx: 8;
+        }
+        .frontend { fill: #dbeafe; }
+        .backend { fill: #fef3c7; }
+        .database { fill: #d1fae5; }
+        .cloud { fill: #e0e7ff; }
+        text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+        }
+        .title { font-weight: bold; font-size: 16px; }
+        .small { font-size: 12px; }
+        .arrow { stroke: #6b7280; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 PropEase - System Architecture</h1>
+        <svg viewBox="0 0 1200 1400" xmlns="http://www.w3.org/2000/svg">
+            <!-- Arrow marker definition -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#6b7280" />
+                </marker>
+            </defs>
+            
+            <!-- Title -->
+            <text x="600" y="30" text-anchor="middle" class="title" style="font-size: 20px; fill: #1e40af;">
+                PROPEASE PLATFORM ARCHITECTURE
+            </text>
+            
+            <!-- Frontend Layer -->
+            <rect x="50" y="60" width="350" height="220" class="layer frontend"/>
+            <text x="225" y="85" text-anchor="middle" class="title">BUYER FRONTEND</text>
+            <text x="70" y="110" class="small">• Property Search & Filtering</text>
+            <text x="70" y="130" class="small">• Save Favorites (Wishlist)</text>
+            <text x="70" y="150" class="small">• Send Enquiries to Sellers</text>
+            <text x="70" y="170" class="small">• View Property Details</text>
+            <text x="70" y="190" class="small">• Profile Management</text>
+            <text x="70" y="210" class="small">• Browse History</text>
+            <text x="70" y="255" class="small" style="font-weight: bold; fill: #2563eb;">React 19 + Vite</text>
+            
+            <rect x="425" y="60" width="350" height="220" class="layer frontend"/>
+            <text x="600" y="85" text-anchor="middle" class="title">SELLER FRONTEND</text>
+            <text x="445" y="110" class="small">• Add New Properties</text>
+            <text x="445" y="130" class="small">• Manage Listings (CRUD)</text>
+            <text x="445" y="150" class="small">• Upload Property Images</text>
+            <text x="445" y="170" class="small">• View Enquiries</text>
+            <text x="445" y="190" class="small">• Track Statistics (Views/Likes)</text>
+            <text x="445" y="210" class="small">• Dashboard Analytics</text>
+            <text x="445" y="255" class="small" style="font-weight: bold; fill: #2563eb;">React Router v6</text>
+            
+            <rect x="800" y="60" width="350" height="220" class="layer frontend"/>
+            <text x="975" y="85" text-anchor="middle" class="title">ADMIN FRONTEND</text>
+            <text x="820" y="110" class="small">• User Management (All Roles)</text>
+            <text x="820" y="130" class="small">• Property Control (All Sellers)</text>
+            <text x="820" y="150" class="small">• System Analytics</text>
+            <text x="820" y="170" class="small">• Force Status Changes</text>
+            <text x="820" y="190" class="small">• Platform Monitoring</text>
+            <text x="820" y="210" class="small">• Content Moderation</text>
+            <text x="820" y="255" class="small" style="font-weight: bold; fill: #2563eb;">JWT Authentication</text>
+            
+            <!-- Arrow from Frontend to Backend -->
+            <line x1="225" y1="285" x2="225" y2="340" class="arrow"/>
+            <line x1="600" y1="285" x2="600" y2="340" class="arrow"/>
+            <line x1="975" y1="285" x2="975" y2="340" class="arrow"/>
+            
+            <text x="600" y="315" text-anchor="middle" class="small" style="fill: #059669; font-weight: bold;">
+                JWT Token (Bearer Authentication)
+            </text>
+            
+            <!-- Spring Boot Backend -->
+            <rect x="150" y="350" width="900" height="500" class="layer backend"/>
+            <text x="600" y="380" text-anchor="middle" class="title" style="font-size: 18px;">
+                SPRING BOOT BACKEND (REST API - Port 8080)
+            </text>
+            
+            <!-- Security Layer -->
+            <rect x="170" y="400" width="860" height="80" class="layer" style="fill: #fef2f2;"/>
+            <text x="600" y="425" text-anchor="middle" class="title">SECURITY LAYER</text>
+            <text x="190" y="450" class="small">• JwtAuthenticationFilter (validates every request)</text>
+            <text x="190" y="468" class="small">• Role-Based Access Control (@PreAuthorize annotations)</text>
+            <text x="640" y="450" class="small">• BCrypt Password Encryption</text>
+            <text x="640" y="468" class="small">• CORS Configuration</text>
+            
+            <!-- Controller Layer -->
+            <rect x="170" y="495" width="860" height="80" class="layer" style="fill: #e0f2fe;"/>
+            <text x="600" y="520" text-anchor="middle" class="title">CONTROLLER LAYER (REST Endpoints)</text>
+            <text x="190" y="545" class="small">• AuthController - /api/auth/**</text>
+            <text x="190" y="563" class="small">• PropertyController - /api/properties/**</text>
+            <text x="520" y="545" class="small">• EnquiryController - /api/enquiries/**</text>
+            <text x="520" y="563" class="small">• AdminController - /api/admin/**</text>
+            <text x="820" y="545" class="small">• PropertyLikeController</text>
+            <text x="820" y="563" class="small">• ViewServiceController</text>
+            
+            <!-- Service Layer -->
+            <rect x="170" y="590" width="860" height="100" class="layer" style="fill: #fef3c7;"/>
+            <text x="600" y="615" text-anchor="middle" class="title">SERVICE LAYER (Business Logic)</text>
+            <text x="190" y="640" class="small">• PropertyService</text>
+            <text x="190" y="658" class="small">• UserService</text>
+            <text x="190" y="676" class="small">• PropertyLikeService</text>
+            <text x="390" y="640" class="small">• EnquiryService</text>
+            <text x="390" y="658" class="small">• ViewService</text>
+            <text x="390" y="676" class="small">• CloudinaryService</text>
+            <text x="570" y="640" class="small">• AdminService</text>
+            <text x="570" y="658" class="small">• PropertyImageService</text>
+            <text x="780" y="640" class="small">• CustomUserDetailsService</text>
+            <text x="780" y="658" class="small">• JwtUtil (Token Gen/Validation)</text>
+            
+            <!-- Repository Layer -->
+            <rect x="170" y="705" width="860" height="80" class="layer" style="fill: #d1fae5;"/>
+            <text x="600" y="730" text-anchor="middle" class="title">REPOSITORY LAYER (JPA/Hibernate)</text>
+            <text x="190" y="755" class="small">• UserRepository</text>
+            <text x="190" y="773" class="small">• PropertyRepository</text>
+            <text x="420" y="755" class="small">• EnquiryRepository</text>
+            <text x="420" y="773" class="small">• PropertyLikeRepository</text>
+            <text x="660" y="755" class="small">• PropertyViewsRepository</text>
+            <text x="660" y="773" class="small">• PropertyImageRepository</text>
+            
+            <!-- Arrow from Backend to Database -->
+            <line x1="400" y1="855" x2="400" y2="920" class="arrow"/>
+            <line x1="800" y1="855" x2="800" y2="920" class="arrow"/>
+            
+            <!-- Database Layer -->
+            <rect x="150" y="930" width="450" height="380" class="layer database"/>
+            <text x="375" y="960" text-anchor="middle" class="title" style="font-size: 18px;">MySQL DATABASE</text>
+            
+            <text x="170" y="995" class="title" style="font-size: 14px;">Tables:</text>
+            
+            <rect x="170" y="1010" width="200" height="140" class="layer" style="fill: white;"/>
+            <text x="270" y="1030" text-anchor="middle" style="font-weight: bold;">users</text>
+            <text x="180" y="1050" class="small">• user_id (PK)</text>
+            <text x="180" y="1068" class="small">• email (UNIQUE)</text>
+            <text x="180" y="1086" class="small">• password (BCrypt)</text>
+            <text x="180" y="1104" class="small">• role (ENUM)</text>
+            <text x="180" y="1122" class="small">• phone, created_at</text>
+            
+            <rect x="390" y="1010" width="200" height="140" class="layer" style="fill: white;"/>
+            <text x="490" y="1030" text-anchor="middle" style="font-weight: bold;">properties</text>
+            <text x="400" y="1050" class="small">• property_id (PK)</text>
+            <text x="400" y="1068" class="small">• seller_id (FK)</text>
+            <text x="400" y="1086" class="small">• title, price, city</text>
+            <text x="400" y="1104" class="small">• property_type, status</text>
+            <text x="400" y="1122" class="small">• description, created_at</text>
+            
+            <rect x="170" y="1165" width="200" height="130" class="layer" style="fill: white;"/>
+            <text x="270" y="1185" text-anchor="middle" style="font-weight: bold;">enquiries</text>
+            <text x="180" y="1205" class="small">• enquiry_id (PK)</text>
+            <text x="180" y="1223" class="small">• property_id (FK)</text>
+            <text x="180" y="1241" class="small">• buyer_id (FK)</text>
+            <text x="180" y="1259" class="small">• message, status</text>
+            <text x="180" y="1277" class="small">• created_at</text>
+            
+            <rect x="390" y="1165" width="200" height="130" class="layer" style="fill: white;"/>
+            <text x="490" y="1185" text-anchor="middle" style="font-weight: bold;">property_images</text>
+            <text x="400" y="1205" class="small">• image_id (PK)</text>
+            <text x="400" y="1223" class="small">• property_id (FK)</text>
+            <text x="400" y="1241" class="small">• image_url</text>
+            <text x="400" y="1259" class="small">• (Cloudinary URLs)</text>
+            
+            <!-- Cloudinary -->
+            <rect x="650" y="930" width="500" height="200" class="layer cloud"/>
+            <text x="900" y="960" text-anchor="middle" class="title" style="font-size: 18px;">CLOUDINARY CDN</text>
+            <text x="670" y="995" class="title" style="font-size: 14px;">Cloud Image Storage:</text>
+            <text x="670" y="1025" class="small">✓ Scalable storage (unlimited images)</text>
+            <text x="670" y="1048" class="small">✓ Fast CDN delivery worldwide</text>
+            <text x="670" y="1071" class="small">✓ Automatic image optimization</text>
+            <text x="670" y="1094" class="small">✓ Secure HTTPS URLs</text>
+            <text x="670" y="1117" class="small">✓ Format conversion (WebP, JPEG)</text>
+            
+            <text x="900" y="1155" text-anchor="middle" style="font-weight: bold; fill: #059669;">
+                Returns: https://res.cloudinary.com/.../image.jpg
+            </text>
+            
+            <!-- Additional tables info -->
+            <rect x="650" y="1145" width="240" height="85" class="layer" style="fill: #fef3c7;"/>
+            <text x="770" y="1165" text-anchor="middle" style="font-weight: bold;">property_likes</text>
+            <text x="660" y="1185" class="small">• UNIQUE(buyer, property)</text>
+            <text x="660" y="1203" class="small">• Wishlist feature</text>
+            
+            <rect x="910" y="1145" width="240" height="85" class="layer" style="fill: #fef3c7;"/>
+            <text x="1030" y="1165" text-anchor="middle" style="font-weight: bold;">property_views</text>
+            <text x="920" y="1185" class="small">• UNIQUE(property, user)</text>
+            <text x="920" y="1203" class="small">• Analytics tracking</text>
+            
+            <!-- Legend -->
+            <rect x="150" y="1330" width="1000" height="50" class="layer" style="fill: #f9fafb;"/>
+            <text x="160" y="1355" class="title">TECH STACK:</text>
+            <text x="270" y="1355" class="small" style="fill: #2563eb;">React 19 + Vite</text>
+            <text x="410" y="1355" class="small" style="fill: #f59e0b;">Spring Boot 3.x</text>
+            <text x="550" y="1355" class="small" style="fill: #059669;">MySQL 8.0</text>
+            <text x="660" y="1355" class="small" style="fill: #7c3aed;">JWT + BCrypt</text>
+            <text x="790" y="1355" class="small" style="fill: #dc2626;">Cloudinary API</text>
+            <text x="930" y="1355" class="small" style="fill: #0891b2;">JPA/Hibernate</text>
+        </svg>
+    </div>
+</body>
+</html>
